@@ -1,0 +1,4 @@
+scchart Pacemaker {
+
+    initial state init;
+}
