@@ -14,7 +14,7 @@
 
 scchart VVIPacemaker{
    //External Environment
-  input signal VSense, VRPTO, LRITO;
+  input signal VSense, VRPTO, LRITO, VPace;
   output signal VPace;
   
 //  initial state A
@@ -36,13 +36,19 @@ scchart VVIPacemaker{
     //2
  	region VRP:
     initial state idle   
-    --> waitVRP with VSense / VRP_start ;
-    //--> waitVRP with VPace / VRP_start ;
+    --> waitVRP2 with VSense
+    --> waitVRP2 with VPace ;
    
-	state waitVRP  
-	--> idle with VRP_ex;
-	//--> waitVRP immediate with VSense;
-//  
+  	state waitVRP2
+  	--> waitVRP immediate with /VRP_start;
+
+	//Need a blank/connector state for priority to work
+	state waitVRP
+	--> idle with VRP_ex
+	--> connectState1 with VSense;
+	
+	connector state connectState1
+	--> waitVRP immediate;
 
 
 /* Testing if two regions can exist */
