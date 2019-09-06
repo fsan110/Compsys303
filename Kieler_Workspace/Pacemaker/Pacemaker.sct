@@ -5,6 +5,7 @@ scchart VVIPacemaker{
   //	  Blank/connector states are also needed for priority to work in the event they transition to a common state
   //	  region VRP and LRI have examples
   //	  This problem does not happen for internal signals. region LRI_timer is an example
+  //@detail Potential bug. LRI timer can be stopped during waitVRP.
   
   //External Environment
   input signal VSense, VRPTO, LRITO;
@@ -56,13 +57,14 @@ scchart VVIPacemaker{
    
     state waitLRI
    	--> connectVSense with VSense
-   	--> connectLRI_ex with LRI_ex;
+   	--> intState with LRI_ex / VPace;
+   	//--> connectLRI_ex with LRI_ex;
    	
    	state connectVSense
    	--> intState immediate with /LRI_stop;
    	
-   	state connectLRI_ex
-   	--> intState immediate with /VPace;
+//   	state connectLRI_ex
+//   	--> intState immediate with /VPace;
    	
 	//Reset state 
     state intState
