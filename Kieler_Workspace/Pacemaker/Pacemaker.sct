@@ -1,102 +1,82 @@
 
-/*scchart Simple {
-	
-  initial state A
-    --> B;
-  
-  state B
-  --> C;
-  
-  state C
-  --> A immediate;
-}*/
-
-
 scchart VVIPacemaker{
-   //External Environment
-  input signal VSense, VRPTO, LRITO, VPace;
-  output signal VPace;
+   
+  //@note External input signals present in multiple regions need a connector/blank state for transitions
+  //	  Blank/connector states are also needed for priority to work in the event they transition to a common state
+  //	  region VRP and LRI have examples
+  //	  This problem does not happen for internal signals. region LRI_timer is an example
   
-//  initial state A
-//  --> top immediate;
-
+  //External Environment
+  input signal VSense, VRPTO, LRITO;
+  output signal VPace;
+ 
  initial state top{
    
-    signal VRP_ex, VRP_start, LRI_start;
-    signal LRI_ex, LRI_stop;
+    signal VRP_ex, VRP_start;
+    signal LRI_start, LRI_ex, LRI_stop;
  
     //1
     region VRP_timer :
     initial state idle
     --> timer with VRP_start;
-    
+
     state timer
     --> idle  with VRPTO/ VRP_ex;
+    
     
     //2
  	region VRP:
     initial state idle   
-    --> waitVRP2 with VSense
-    --> waitVRP2 with VPace ;
+    --> waitVRP1 with VSense
+    --> waitVRP1 with VPace ;
    
-  	state waitVRP2
-  	--> waitVRP immediate with /VRP_start;
+  	state waitVRP1
+  	--> waitVRP2 immediate with /VRP_start;
 
-	//Need a blank/connector state for priority to work
-	state waitVRP
+
+	state waitVRP2
 	--> idle with VRP_ex
 	--> connectState1 with VSense;
 	
 	connector state connectState1
-	--> waitVRP immediate;
+	--> waitVRP2 immediate;
+	
 
-
-/* Testing if two regions can exist */
-//    region LRI_timer :
-//    initial state idle
-//    --> timer with LRI_start;
-//    
-//    state timer
-//    --> idle  with LRITO/ LRI_ex;
-    
-   
     //3
-//    @hide
-//    region LRI:
-//      initial state init
-//    --> waitVRP;
-//    
-//    state waitVRP
-//    --> waitLRI;
-//    
-//    state waitLRI
-//    --> intState;
-//    
-//    state intState
-//    -->waitVRP;
-//    
-//    //4
-//    @hide    
-//    region LRI_timer :
-//     initial state idle
-//    --> timer;
-//    
-//    state timer
-//    --> idle;
+    region LRI:
+        
+    initial state init
+  	--> connectInit with VSense;
     
-
-	} ;
+    connector state connectInit
+    --> waitVRP immediate with /LRI_start;
+   
+   	state waitVRP
+   	--> waitLRI with VRP_ex;
+   
+    state waitLRI
+   	--> connectVSense with VSense
+   	--> connectLRI_ex with LRI_ex;
+   	
+   	state connectVSense
+   	--> intState immediate with /LRI_stop;
+   	
+   	state connectLRI_ex
+   	--> intState immediate with /VPace;
+   	
+	//Reset state 
+    state intState
+    -->waitVRP with /LRI_start;
+    
+    //4
+    region LRI_timer :
+    initial state idle
+    --> timer with LRI_start;
+    
+    state timer
+    --> idle with LRI_stop
+    --> idle with LRITO/LRI_ex;
   
-}
+	};
 
-/*scchart delay {
-  input int ticksToWait;
-  input bool clock;
-  int counter = 0;
-  initial state init
-  --> done immediate with
-    counter >= ticksToWait
-  --> init with
-    clock / counter = counter + 1;
-  final state done;
-}*/
+}
