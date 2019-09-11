@@ -2,9 +2,14 @@
 scchart DDDPacemaker{
    
   //@note By sets and relations theory each state can have
-  //	  one unique output for each input.
-  //	  Not sure how to stop LRI and AVI, AEI timer for 
+  //	  one unique output for the same input.
+  //@note Not sure how to stop LRI and AVI, AEI timer for timeouts
   // 	  in C. Either check signal_ex or signal_stop for that
+  //@note LRI timer needs to be stopped and started in same tick().
+  //	  This is as per diagram.
+  //@note Pre(signal) has been used in some places to sync state
+  //	  transitions and outputs
+  
   
   /*Control signals, external inputs and status signals*/
   input signal VSense, ASense;
@@ -41,8 +46,8 @@ scchart DDDPacemaker{
    region VRP:
 	
 		initial state idle
-			--> waitVRP with VSense && (URI_start && LRI_start) / VRP_start
-			--> waitVRP with VPace && (URI_start && LRI_start) / VRP_start;
+			--> waitVRP with VPace && (URI_start && LRI_start) / VRP_start
+			--> waitVRP with VSense && (URI_start && LRI_start) / VRP_start;
     	
     	state waitVRP
     		--> idle with VRP_ex / VRP_stop
@@ -66,7 +71,7 @@ scchart DDDPacemaker{
     	state waitURI_exit
     		--> waitLRI with URI_ex;
     	
-    	//Timer will be stopped with either LRI_stop or LRI_ex		
+    			
     	state waitLRI 
     		--> intState with VSense || VPace / LRI_stop
     		--> intState with LRI_ex / VPace;
@@ -138,36 +143,47 @@ scchart DDDPacemaker{
 		state waitAtrial
 			--> idle with ASense / AEI_stop
 			--> idle with AEI_ex / APace;
-   
-   /* Do not use till AEI is done */
-   
-   
+	
+			    		
+    region AVI_timer:
+    	initial state idle
+    		--> timer with AVI_start;
+    	
+    	state timer
+    		--> idle with AVI_stop 
+    		--> idle with AVITO / AVI_ex;
     		
-//    region AVI_timer:
-//    	initial state idle
-//    		--> timer with AVI_start;
-//    	
-//    	state timer
-//    		--> idle with AVI_stop 
-//    		--> idle with AVITO / AVI_ex;
-//    		
-//    region AVI:
-//    	initial state idle
-//    		//Change to priority 
-//    		--> wait with ASense || APace / AVI_start;
-//    		
-//    	state wait
-//    		--> waitAVI with URI_ex
-//    		--> waitURI with AVI_ex;
-//    		
-//    	state waitAVI
-//			Does not like this yet. Waiting on PVARP and AEI implementation
-//    		--> idle with (VPace || VSense) / AVI_stop
-//    		--> idle with AVI_ex / VPace;
-//    		
-//    	state waitURI
-//    		--> idle with pre(URI_ex) / VPace;
-//    		
+    region AVI:
+    	initial state idle
+    		--> waitPVARP immediate;
+    		
+    	state waitPVARP
+    		--> waitAtrial with PVARP_ex; 
+    			
+    	state waitAtrial
+    		--> wait with APace / AVI_start
+    		--> wait with ASense / AVI_start;
+    			
+    	state wait
+    		--> waitAVI with URI_ex
+    		--> waitURI;
+    		
+    	state waitURI {exit / AVI_stop;}
+    		//AVI_is stopped when URI has finished
+    		--> idle with pre(URI_ex) / VPace;
+    		
+    	state waitAVI
+			/*Does not like two transitions in this state at all
+			  Have to use connector/blank. 
+			 Cannot explain this part.
+			 Good news is timing seems to be synced */
+    		--> idle with (VPace || VSense) / AVI_stop
+    		--> AVI_Pace with AVI_ex;
+    		
+    	state AVI_Pace {exit / VPace;}
+    		//Only works with exit function.
+    		--> idle;
+    		
     	 				
 	};
    
