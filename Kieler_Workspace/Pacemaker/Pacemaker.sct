@@ -9,7 +9,7 @@ scchart DDDPacemaker{
   /*Control signals, external inputs and status signals*/
   input signal VSense, ASense;
   //For simulation purpose only. To be emitted by peripherals
-  input signal VRPTO, LRITO, URITO, AVITO;
+  input signal VRPTO, LRITO, URITO, AVITO, PVARPTO;
   output signal VPace, APace;
   
   /*Timer signals*/
@@ -21,11 +21,13 @@ scchart DDDPacemaker{
   output signal URI_start, URI_stop;
   //AVI
   output signal AVI_start, AVI_stop;
+  //PVARP
+  output signal PVARP_start, PVARP_stop;
   
    initial state ControlUnit{
    
    /*Internal Signals*/
-   signal VRP_ex, LRI_ex, URI_ex, AVI_ex;
+   signal VRP_ex, LRI_ex, URI_ex, AVI_ex, PVARP_ex;
    
    region VRP_timer:
    		initial state idle
@@ -89,6 +91,32 @@ scchart DDDPacemaker{
     	state timer
     		--> idle with URITO / URI_ex;
     		
+    region PVARP_timer:
+    	initial state idle
+   			--> timer with PVARP_start ;
+   	
+   		state timer
+   			--> idle with PVARPTO / PVARP_ex;
+   			
+   	region PVARP:
+	
+		initial state idle
+			--> waitVRP with VSense && (URI_start && LRI_start) / PVARP_start
+			--> waitVRP with VPace && (URI_start && LRI_start) / PVARP_start;
+			
+		state waitVRP
+    		--> waitPVARP with VRP_ex;
+    		
+    	state waitPVARP
+    		--> idle with PVARP_ex / PVARP_stop
+    		--> waitPVARP with ASense;
+   
+   
+   
+   /* Do not use till AEI is done */
+   
+   
+    		
 //    region AVI_timer:
 //    	initial state idle
 //    		--> timer with AVI_start;
@@ -100,18 +128,21 @@ scchart DDDPacemaker{
 //    region AVI:
 //    	initial state idle
 //    		//Change to priority 
-//    		--> waitVentricle with ASense || APace / AVI_start;
+//    		--> wait with ASense || APace / AVI_start;
 //    		
-//    	state waitVentricle
+//    	state wait
+//    		--> waitAVI with URI_ex
 //    		--> waitURI with AVI_ex;
+//    		
+//    	state waitAVI
+//			Does not like this yet. Waiting on PVARP implementation
+//    		--> idle with (VPace || VSense) / AVI_stop
+//    		--> idle with AVI_ex / VPace;
 //    		
 //    	state waitURI
 //    		--> idle with pre(URI_ex) / VPace;
 //    		
-    	
-    	
-    	
- 				
+    	 				
 	};
    
 }
