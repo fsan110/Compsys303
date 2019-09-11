@@ -1,16 +1,16 @@
 
-scchart VVIPacemaker{
+scchart DDDPacemaker{
    
   //@note By sets and relations theory each state can have
   //	  one unique output for each input.
   //	  Not sure how to stop LRI timer for 
-  // 	  VPace
+  // 	  VPace in C. Either check LRI_ex or LRI_stop for that
   
-  //Control, external inputs and status signals
-  input signal VSense;
+  /*Control signals, external inputs and status signals*/
+  input signal VSense, ASense;
   //For simulation purpose only. To be emitted by peripherals
-  input signal VRPTO, LRITO, URITO;
-  output signal VPace;
+  input signal VRPTO, LRITO, URITO, AVITO;
+  output signal VPace, APace;
   
   /*Timer signals*/
   //VRP
@@ -19,12 +19,13 @@ scchart VVIPacemaker{
   output signal LRI_start, LRI_stop;
   //URI
   output signal URI_start, URI_stop;
+  //AVI
+  output signal AVI_start, AVI_stop;
   
-   //1
    initial state ControlUnit{
    
-   //Internal Signals
-   signal VRP_ex, LRI_ex, URI_ex;
+   /*Internal Signals*/
+   signal VRP_ex, LRI_ex, URI_ex, AVI_ex;
    
    region VRP_timer:
    		initial state idle
@@ -32,9 +33,8 @@ scchart VVIPacemaker{
    	
    		state timer
    			--> idle with VRPTO / VRP_ex;
-	
-	
-	region VRP:
+
+   region VRP:
 	
 		initial state idle
 			--> waitVRP with VSense && (URI_start && LRI_start) / VRP_start
@@ -43,12 +43,10 @@ scchart VVIPacemaker{
     	state waitVRP
     		--> idle with VRP_ex / VRP_stop
     		--> waitVRP with VSense;
-    		
-    	
-   	
-    region LRI_timer:
+    			
+   region LRI_timer:
     	initial state idle
-    		--> timer with LRI_start;
+    		--> timer immediate with LRI_start;
     	
     	state timer
     		--> idle with LRI_stop 
@@ -66,7 +64,7 @@ scchart VVIPacemaker{
     	
     	//Timer will be stopped with either LRI_stop or LRI_ex		
     	state waitLRI 
-    		--> intState with VSense / LRI_stop
+    		--> intState with VSense || VPace / LRI_stop
     		--> intState with LRI_ex / VPace;
     			
     	state intState
@@ -84,12 +82,35 @@ scchart VVIPacemaker{
     		--> idle with URI_ex / URI_stop;
     		    		
     		  		
-     region URI_timer:
+    region URI_timer:
     	initial state idle
     		--> timer with URI_start;
     	
     	state timer
     		--> idle with URITO / URI_ex;
+    		
+//    region AVI_timer:
+//    	initial state idle
+//    		--> timer with AVI_start;
+//    	
+//    	state timer
+//    		--> idle with AVI_stop 
+//    		--> idle with AVITO / AVI_ex;
+//    		
+//    region AVI:
+//    	initial state idle
+//    		//Change to priority 
+//    		--> waitVentricle with ASense || APace / AVI_start;
+//    		
+//    	state waitVentricle
+//    		--> waitURI with AVI_ex;
+//    		
+//    	state waitURI
+//    		--> idle with pre(URI_ex) / VPace;
+//    		
+    	
+    	
+    	
  				
 	};
    
