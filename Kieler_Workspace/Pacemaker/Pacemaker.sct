@@ -1,15 +1,14 @@
 
 scchart VVIPacemaker{
    
-  //@note Blank/connector states are also needed for priority to work 
-  //	  in the event they transition to a common state.
-  // 	  By sets and relations theory each state can have
-  //	  one unique output for each transition. Does not apply to
-  //	  internal signals
+  //@note By sets and relations theory each state can have
+  //	  one unique output for each input.
   //	  There will be one cycle delay between LRI and VRP timers
   
   //Control, external inputs and status signals
-  input signal VSense, VRPTO, LRITO, URITO;
+  input signal VSense;
+  //For simulation purpose only. To be emitted by peripherals
+  input signal VRPTO, LRITO, URITO;
   output signal VPace;
   /*Timer signals*/
   //VRP
@@ -19,65 +18,61 @@ scchart VVIPacemaker{
   //URI
   output signal URI_start, URI_stop;
   
-  
-  
- initial state ControlUnit{
-   
-    //Variables
-   signal VRP_ex, LRI_ex, URI_ex;
-	
    //1
-
+   initial state controller{
+   //Internal Signals
+   signal VRP_ex, LRI_ex, URI_ex;
+   
    region VRP_timer:
    		initial state idle
-   			--> timer with VRP_ex == true / VRP_start ;
+   			--> timer with VRP_start ;
    	
    		state timer
-   			--> idle with VRPTO / VRP_ex = true;
+   			--> idle with VRPTO / VRP_ex;
 	
 	
 	region VRP:
 	
 		initial state idle
-			--> connectVRP with VPace 
-			--> connectVRP with VSense && VRP_ex == false;
+			//--> connectVRP with VSense;
+			--> waitVRP with VSense / VRP_start
+			--> waitVRP with VPace / VRP_start;
 			
-		connector state connectVRP
-			--> waitVRP immediate with / VRP_start;	
+//		connector state connectVRP
+//			--> waitVRP immediate with / VRP_start;	
     	
     	state waitVRP
-    		--> idle with VRP_ex == true / VRP_stop
+    		--> idle with VRP_ex / VRP_stop
     		--> waitVRP with VSense;
     		
     	
    	
-//    region LRI_timer:
-//    	initial state idle
-//    		--> timer with LRI_start;
-//    	
-//    	state timer
-//    		--> idle with LRI_stop / LRI_ex = true;
-//    		--> idle with LRITO / LRI_ex = true;
-//    	
-//    region LRI:
-//    	initial state idle
-//    		--> waitVRP with VSense / LRI_start;
-//    		
-//    	state waitVRP
-//    		--> waitLRI with VRP_ex;
-//    	
-//    		
-//    	state waitLRI
-//    		--> URI_exit with URI_ex;
-//    		
-//		//Timer will be stopped with either LRI_stop or LRI_ex		
-//		state URI_exit
-//			--> intState with VSense / LRI_stop
-//			--> intState with LRI_ex / VPace;
-//			
-//    	state intState
-//    		--> waitVRP with / LRI_start;
-//    		
+    region LRI_timer:
+    	initial state idle
+    		--> timer with LRI_start;
+    	
+    	state timer
+    		--> idle with LRI_stop 
+    		--> idle with LRITO / LRI_ex;
+    	
+    region LRI:
+    	initial state idle
+    		--> waitVRP with VSense / LRI_start;
+    		
+    	state waitVRP
+    		--> waitLRI with VRP_ex;
+    	
+    		
+    	state waitLRI
+    		--> intState with VSense / LRI_stop
+    		--> intState with LRI_ex / VPace;
+    		
+		//Timer will be stopped with either LRI_stop or LRI_ex		
+
+			
+    	state intState
+    		--> waitVRP immediate with / LRI_start;
+    		
 // 	region URI:
 // 		initial state idle
 //    		--> waitVRP with VSense / URI_start;
@@ -97,6 +92,6 @@ scchart VVIPacemaker{
 //    	state timer
 //    		--> idle with URITO / URI_ex = true;
 // 				
- 			
-   };
+	};
+   
 }
