@@ -3,13 +3,13 @@ scchart DDDPacemaker{
    
   //@note By sets and relations theory each state can have
   //	  one unique output for each input.
-  //	  Not sure how to stop LRI timer for 
-  // 	  VPace in C. Either check LRI_ex or LRI_stop for that
+  //	  Not sure how to stop LRI and AVI, AEI timer for 
+  // 	  in C. Either check signal_ex or signal_stop for that
   
   /*Control signals, external inputs and status signals*/
   input signal VSense, ASense;
   //For simulation purpose only. To be emitted by peripherals
-  input signal VRPTO, LRITO, URITO, AVITO, PVARPTO;
+  input signal VRPTO, LRITO, URITO, AVITO, PVARPTO, AEITO;
   output signal VPace, APace;
   
   /*Timer signals*/
@@ -23,11 +23,13 @@ scchart DDDPacemaker{
   output signal AVI_start, AVI_stop;
   //PVARP
   output signal PVARP_start, PVARP_stop;
+  //AEI
+  output signal AEI_start, AEI_stop;
   
    initial state ControlUnit{
    
    /*Internal Signals*/
-   signal VRP_ex, LRI_ex, URI_ex, AVI_ex, PVARP_ex;
+   signal VRP_ex, LRI_ex, URI_ex, AVI_ex, PVARP_ex, AEI_ex;
    
    region VRP_timer:
    		initial state idle
@@ -110,8 +112,32 @@ scchart DDDPacemaker{
     	state waitPVARP
     		--> idle with PVARP_ex / PVARP_stop
     		--> waitPVARP with ASense;
+    		
+    region AEI_timer:
+    	
+    	initial state idle
+    		--> timer with AEI_start;
+    	
+    	state timer
+    		--> idle with AEI_stop 
+    		--> idle with AEITO / AEI_ex;
+    	
    
-   
+    region AEI:
+    	
+    	initial state idle
+			--> waitVRP with VSense / AEI_start
+			--> waitVRP with VPace  / AEI_start;
+			
+		state waitVRP
+			--> waitPVARP with VRP_ex;
+		
+		state waitPVARP
+			--> waitAtrial with PVARP_ex;
+			
+		state waitAtrial
+			--> idle with ASense / AEI_stop
+			--> idle with AEI_ex / APace;
    
    /* Do not use till AEI is done */
    
@@ -135,7 +161,7 @@ scchart DDDPacemaker{
 //    		--> waitURI with AVI_ex;
 //    		
 //    	state waitAVI
-//			Does not like this yet. Waiting on PVARP implementation
+//			Does not like this yet. Waiting on PVARP and AEI implementation
 //    		--> idle with (VPace || VSense) / AVI_stop
 //    		--> idle with AVI_ex / VPace;
 //    		
