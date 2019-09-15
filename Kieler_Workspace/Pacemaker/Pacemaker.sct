@@ -63,7 +63,7 @@ scchart DDDPacemaker{
     	
     region LRI:
     	initial state idle
-    		--> waitVRP with VSense / LRI_start;
+    		--> waitVRP with (VSense || VPace) / LRI_start;
     	
     	state waitVRP
     		--> waitURI_exit with VRP_ex;
@@ -155,7 +155,8 @@ scchart DDDPacemaker{
     		
     region AVI:
     	initial state idle
-    		--> waitPVARP immediate;
+    		--> waitPVARP with VSense
+    		--> waitAVI with ASense / AVI_start;
     		
     	state waitPVARP
     		--> waitAtrial with PVARP_ex; 
@@ -170,19 +171,19 @@ scchart DDDPacemaker{
     		
     	state waitURI {exit / AVI_stop;}
     		//AVI_is stopped when URI has finished
-    		--> idle with pre(URI_ex) / VPace;
+    		--> waitPVARP with pre(URI_ex) / VPace;
     		
     	state waitAVI
 			/*Does not like two transitions in this state at all
 			  Have to use connector/blank. 
 			 Cannot explain this part.
 			 Good news is timing seems to be synced */
-    		--> idle with (VPace || VSense) / AVI_stop
+    		--> waitPVARP with (VPace || VSense) / AVI_stop
     		--> AVI_Pace with AVI_ex;
     		
     	state AVI_Pace {exit / VPace;}
     		//Only works with exit function.
-    		--> idle;
+    		--> waitPVARP;
     		
     	 				
 	};
