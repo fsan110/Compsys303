@@ -196,3 +196,141 @@ scchart DDDPacemaker{
 	};
    
 }
+
+/*
+ * DDD Mode PaceMaker
+ */
+//scchart PaceMaker {
+//  input signal AS, VS; //Heart events
+//  input signal R; //Debug only reset singal
+//  
+//  //Timer has expired
+//  input signal AVI_EVENT, PVARP_EVENT,VRP_EVENT,AEI_EVENT,LRI_EVENT,URI_EVENT;
+//  
+//  //Pace heart
+//  output signal APACE,VPACE;
+//  
+//  //Start timers
+//  output signal AVI_START,PVARP_START,VRP_START,AEI_START,LRI_START,URI_START;
+//  
+//  //Stop Timers
+//  output signal AVI_STOP,AEI_STOP;
+//  
+//  //Internal use for debugging see if heart event was not a refractory signal
+//  output signal VACCEPT,AACCEPT;
+//  
+//  
+//  
+//  region Main:
+//  
+//  initial state PACEMAKER {
+//    
+//    initial state main {
+//      
+//      //Timers that start to V signals
+//      region VTIMERS:
+//      initial state tick
+//      --> tick with VACCEPT/VRP_START;PVARP_START;URI_START;AEI_START;LRI_START;      
+//      
+//      //Timer reactions to A signals
+//      region ATIMERS:
+//      initial state tick
+//      --> tick with AACCEPT/AVI_START;AEI_STOP;  
+//      
+//      //Stop AVI
+//      region AVI_STOP:
+//      initial state tick
+//      --> tick with VACCEPT/AVI_STOP;
+//      
+//      region AACEPT_LOGIC:
+//      initial state init{
+//        
+//        //Initially when no timer have started any A signal is accepted
+//        region init_region:
+//        initial state init
+//        --> final_state with AS/AACCEPT;
+//        final state final_state;
+//      }
+//      >-> continuous 
+//      --> continuous with VACCEPT;
+//      
+//      //Once timers have started wait for PVARP to end before accepting
+//      state continuous{
+//        region continous_region:
+//        initial state init
+//        --> refactory_over with PVARP_EVENT;
+//        state refactory_over
+//        --> refactory_over with AS/AACCEPT;
+//      }
+//      --> continuous with PVARP_START;
+//      
+//      
+//      region VACCEPT_LOGIC:
+//      //Initially when no timer have started any V signal is accepted
+//      initial state init
+//      --> continuous with VS/VACCEPT;
+//      
+//      //Once timers have started wait for VRP to end before accepting
+//      state continuous{
+//        region continuous_region:
+//        initial state init
+//        --> safe with VRP_EVENT;
+//        state safe
+//        --> safe with VS/VACCEPT;
+//      }
+//      --> continuous with VRP_START;
+//      
+//      //Pace when AEI expires 
+//      region APACE_LOGIC:
+//      initial state AEI_PACE{
+//        region logic:
+//        initial state init
+//      	o-> safe  with AACCEPT
+//      	--> paceA with AEI_EVENT/APACE;AACCEPT;
+//      	state paceA;
+//      	state safe;
+//      }
+//      --> AEI_PACE with AEI_START;
+//      
+//      //Pace when LRI or AVI expires but wait for URI before sending
+//      region VPACE_LOGIC:
+//      
+//      //Initially AVI can expire with URI not running in this case we pace immediately 
+//      initial state before_v{
+//        region before_v_region:
+//        initial state init
+//        o-> end with VACCEPT
+//        --> end with AVI_EVENT/VPACE;VACCEPT;
+//        final state end;
+//      }
+//      >-> after_v;
+//      
+//      //This state is continuous once we have a VACCEPT
+//      state after_v{
+//        region after_v_region:
+//        initial state wait_uri
+//        
+//        //URI has priority so we handle the case URI expires in same tick as LRI or AVI
+//        o-> uri_done with URI_EVENT
+//        --> delay_uri with LRI_EVENT || AVI_EVENT;
+//        state uri_done
+//        //If we want to pace at the same time we get an VACCEPT cancel the pace
+//        o-> safe immediate with VACCEPT
+//        --> vpace immediate with LRI_EVENT || AVI_EVENT / VPACE;VACCEPT;
+//        state delay_uri
+//        //If we want to pace at the same time we get an VACCEPT cancel the pace
+//        o-> safe immediate with VACCEPT
+//        --> vpace immediate with URI_EVENT / VPACE;VACCEPT;
+//        state safe;
+//        state vpace;
+//      }
+//      --> after_v with URI_START;
+//      
+//      
+//    };
+//    
+//    
+//    
+//  }
+//  o-> PACEMAKER with R;
+//}
