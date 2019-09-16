@@ -8,7 +8,7 @@ scchart DDDPacemaker{
   //@note LRI timer needs to be stopped and started in same tick().
   //	  This is as per diagram.
   //@note Pre(signal) has been used in some places to sync state
-  //	  transitions and outputs
+  //	  transitions
   
   
   /*Control signals, external inputs and status signals*/
@@ -63,7 +63,8 @@ scchart DDDPacemaker{
     	
     region LRI:
     	initial state idle
-    		--> waitVRP with (VSense || VPace) / LRI_start;
+    		--> waitVRP with VPace / LRI_start
+    		--> waitVRP with VSense / LRI_start;
     	
     	state waitVRP
     		--> waitURI_exit with VRP_ex;
@@ -81,7 +82,8 @@ scchart DDDPacemaker{
     		
  	region URI:
  		initial state idle
-    		--> waitVRP with (VSense || VPace) / URI_start;
+    		--> waitVRP with VPace / URI_start
+    		--> waitVRP with VSense / URI_start;
     		
     	state waitVRP
     		--> waitURI with VRP_ex;
@@ -155,8 +157,13 @@ scchart DDDPacemaker{
     		
     region AVI:
     	initial state idle
-    		--> waitPVARP with VSense
-    		--> waitAVI with ASense / AVI_start;
+    		--> waitAVI with ASense / AVI_start
+    		--> waitVRP with VPace
+    		--> waitVRP with VSense;
+    		
+    	state waitVRP
+			--> waitPVARP with VRP_ex;
+    		
     		
     	state waitPVARP
     		--> waitAtrial with PVARP_ex; 
