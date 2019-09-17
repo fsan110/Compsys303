@@ -30,9 +30,13 @@ void enableButtonInterrupts();
 void disableButtonInterrupts();
 void clearLeds();
 
-//Button Flags
+/*Button Flags*/
 uint8_t button0Flag = 0;
 uint8_t button1Flag = 0;
+
+/*Time out Flags for timers */
+uint8_t URITO_flag =0;
+uint8_t VRPTO_flag =0;
 
 /*Heart function Declarations*/
 void resetHeartSignals();
@@ -62,6 +66,7 @@ void* timerContextLRI = (void*) &timeCountMainLRI;
 
 alt_u32 VRPTimerISR(void* context){
 	//Return 0 to stop timer
+	VRPTO_flag=1;
 	return 0;
 }
 
@@ -145,7 +150,8 @@ int main()
 
 	while(1){
 
-		resetHeartSignals();
+		//get inputs VSense and Asense BEFORE tick
+		buttonCheck();
 
 		tick();
 
@@ -160,7 +166,25 @@ int main()
 	return 0;
 }
 
+//TO DO
+void resetTimerFlags(){
 
+}
+
+void buttonCheck(){
+	if(button0Flag){
+		VSense = 1;
+	}else{
+		VSense = 0;
+	}
+	//Atrial events ignored for now
+	/*if(button1Flag){
+			ASense = 1;
+		}else{
+			ASense = 0;
+		}*/
+
+}
 
 
 void VRP_region(){
@@ -188,8 +212,8 @@ void LRI_region(){
 
 void ventricleActivity()
 {
-	//URI_region();
-	//LRI_region();
+	URI_region();
+	LRI_region();
 	VRP_region();
 
 
@@ -207,30 +231,3 @@ void resetHeartSignals(){
 }
 
 
-/*int main()
-{
-	reset();
-	while(1)
-	{
-		int switchvalue = IORD_ALTERA_AVALON_PIO_DATA(BUTTONS_BASE);
-		A = (!((1<<2) & switchvalue));
-		B = (!((1<<1) & switchvalue));
-		R = (!((1<<0) & switchvalue));
-
-		tick();
-
-		// Output O to Red LED
-		if (O == 1){
-			IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 1);
-			printf("R:%d\n", R);
-			printf("O:%d\n", O);
-		}
-		else if (O == 0)
-		{
-			IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 0);
-			printf("R:%d\n", R);
-			printf("O:%d\n", O);
-		}
-	}
-	return 0;
-}*/
