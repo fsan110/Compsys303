@@ -325,17 +325,16 @@ void LRI_region(){
 void AEI_region(){
 	if(AEI_stop && AEI_running){
 
-		//if(AEI_running){
-			alt_alarm_stop(&aei_timer);
-			printf("AEI stopped!\n");
-			AEI_running = 0;
-		//}
+
+		alt_alarm_stop(&aei_timer);
+		printf("AEI stopped!\n");
+		AEI_running = 0;
+
 
 	}else if(AEI_start){
 
 		if(AEI_running){
-			//alt_alarm_stop(&aei_timer);
-			//AEI_running = 0;
+
 			printf("AEI should not be running !");
 		}
 			alt_alarm_start(&aei_timer, AEI_VALUE, AEITimerISR, timerContextAEI);
@@ -360,8 +359,7 @@ void AVI_region(){
 	}else if(AVI_start){
 
 		if(AVI_running){
-			//alt_alarm_stop(&avi_timer);
-			//AVI_running = 0;
+
 			printf("AVI should not be running!");
 		}
 
