@@ -9,12 +9,13 @@
 #define PACEMAKERFSM_H_
 
 // Example timeout values in milliseconds
-#define AVI_VALUE 300
-#define AEI_VALUE 800
-#define PVARP_VALUE 150
 #define VRP_VALUE 2000
-#define LRI_VALUE 5000
-#define URI_VALUE 3000
+#define PVARP_VALUE 5000
+#define AVI_VALUE 7000
+#define AEI_VALUE 10000
+#define URI_VALUE 12000
+#define LRI_VALUE 15000
+
 
 //Functions
 void tick();
@@ -22,31 +23,27 @@ void reset();
 
 
 // Inputs
-extern char VSense;
-extern char ASense;
+extern char Vs;
+extern char Rst;
+extern char As;
 //Timer timeouts
 extern char VRPTO, LRITO, URITO, AVITO, PVARPTO, AEITO;
 
 // Outputs
-extern char VPace, APace;
-
-//Internal signals. Test purpose only
-extern _DDDPacemaker_local_VRP_ex;
-extern _DDDPacemaker_local_URI_ex;
-extern _DDDPacemaker_local_LRI_ex;
+extern char Vp, Ap;
 
 
 /*Timer signals*/
 //VRP
-extern char VRP_start, VRP_stop;
+extern char VRP_start;
 //LRI
-extern char LRI_start, LRI_stop;
+extern char LRI_start;
 //URI
-extern char URI_start, URI_stop;
+extern char URI_start;
 //AVI
 extern char AVI_start, AVI_stop;
 //PVARP
-extern char PVARP_start, PVARP_stop;
+extern char PVARP_start;
 //AEI
 extern char AEI_start, AEI_stop;
 

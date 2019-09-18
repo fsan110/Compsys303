@@ -118,10 +118,8 @@ output signal AVI_stop, AEI_stop;
 			initial state AEI{
 			  	initial state init
 			  		o-> finish with start_ATimers
-			  		--> aPace with AEITO / start_ATimers;
-			  		
-			  	
-			  		
+			  		--> aPace with AEITO / Ap; start_ATimers;
+			  					  		
 			  	state finish;
 			  	
 			  	state aPace;
