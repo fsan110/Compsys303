@@ -20,6 +20,7 @@ void enableButtonInterrupts();
 void disableButtonInterrupts();
 void clearGreenLeds();
 void clearRedLeds();
+void buttonCheck();
 
 /*Button Flags*/
 uint8_t button0Flag = 1;  //Ventricle starts first. Just to get things moving on start
@@ -81,6 +82,9 @@ void* timerContextAEI = (void*) &timeCountMainAEI;
 alt_alarm avi_timer;
 uint8_t timeCountMainAVI = 0;
 void* timerContextAVI = (void*) &timeCountMainAVI;
+
+//
+int start_time=0;
 
 
 alt_u32 VRPTimerISR(void* context){
@@ -190,6 +194,10 @@ int main()
 
 	while(1){
 
+		start_time++;
+
+
+
 		//Get inputs VSense and ASense BEFORE tick
 		buttonCheck();
 
@@ -200,6 +208,8 @@ int main()
 		if(Vp){
 			printf("VPaced!\n");
 			IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE, 0x1);
+			printf("%d\n",start_time);
+			start_time = 0;
 		}
 
 
@@ -209,7 +219,7 @@ int main()
 
 		}
 
-		/*LRI timer is stopped and started in the same clock cycle*/
+
 		ventricleActivity();
 
 		atrialActivity();
@@ -372,6 +382,7 @@ void AVI_region(){
 
 void ventricleActivity()
 {
+	/*LRI timer is stopped and started in the same clock cycle*/
 	VRP_region();
 	URI_region();
 	LRI_region();
