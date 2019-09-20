@@ -13,19 +13,18 @@
 #include "sys/alt_alarm.h"
 #include <system.h>
 #include <altera_avalon_pio_regs.h>
-/////TEST
+
+//For Uart functionality read() and write() (and open() to init as non blocking)
 #include <fcntl.h>
-//#include <unistd.h>
-//#include <stdlib.h>
-
-
-//END TEST
+//Switches
+#define Switch0 0x01
+//LEDS
 #define Vp_led	0x1
 #define Ap_led	0x2
 #define No_led	0x0
+//MODES
 #define Mode1	1
 #define Mode2 	2
-
 //Files
 FILE* uartFile;
 FILE* LCD;
@@ -81,6 +80,7 @@ void PVARP_region();
 void Run();
 void mode1();
 void mode2();
+void check_mode();
 
 
 
@@ -294,8 +294,6 @@ int main()
 {
 	printf("Hello from Nios II!\n");
 
-	enableInterrupts();
-
 	clearGreenLeds();
 	clearRedLeds();
 
@@ -308,15 +306,6 @@ int main()
 
 	while(1){
 
-		//Write Pace events to heart
-
-		/*uartCheck();
-
-		readUartNonBlocking();
-
-		sendUart();*/
-		// Switches TO DO
-		//uint8_t switchValue = IOWR_ALTERA_AVALON_PIO_DATA(SWITCHES_BASE, 0x1);
 
 		Run();
 
@@ -325,7 +314,7 @@ int main()
 }
 
 void Run(){
-
+			check_mode();
 			switch(Mode){
 				case Mode1:
 					mode1();
@@ -342,6 +331,27 @@ void Run(){
 
 
 }
+
+void check_mode(){
+
+	uint8_t S0=(IORD_ALTERA_AVALON_PIO_DATA(SWITCHES_BASE)&Switch0)&Switch0;
+
+
+	if (S0 && (Mode == Mode2) ){
+
+		Mode=Mode1;
+		enableButtonInterrupts();
+
+	}else if(!S0 && (Mode == Mode1) ){
+		Mode=Mode2;
+		disableButtonInterrupts();
+	}
+
+
+
+
+}
+
 void mode1(){
 	start_time++;
 
@@ -384,7 +394,7 @@ void mode2(){
 
 
 }
-//TO DO
+
 void resetTimerFlags(){
 	if(VRPTO_flag){
 		VRPTO = 1;
