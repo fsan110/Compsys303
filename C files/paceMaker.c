@@ -28,6 +28,9 @@
 //Files
 FILE* uartFile;
 FILE* LCD;
+//Printing to LCD
+#define ESC 27
+#define CLEAR_LCD_STRING "[2J"
 
 
 //Peripheral Function Declarations
@@ -66,7 +69,7 @@ uint8_t AVI_running = 0;
 uint8_t AEI_running = 0;
 
 //Mode
-uint8_t Mode = Mode2;
+uint8_t Mode = Mode1;
 
 //Heart Events
 void ventricleActivity();
@@ -81,8 +84,8 @@ void Run();
 void mode1();
 void mode2();
 void check_mode();
-
-
+void init_mode();
+void lcd_sel_mode();
 
 
 
@@ -299,10 +302,15 @@ int main()
 
 	uartInit();
 
+
+
+	init_mode();
+
+	lcd_sel_mode();
+
 	//Init SCChart
 	reset();
 	tick();
-
 
 	while(1){
 
@@ -332,19 +340,35 @@ void Run(){
 
 }
 
+void init_mode(){
+	uint8_t S0=(IORD_ALTERA_AVALON_PIO_DATA(SWITCHES_BASE)&Switch0)&Switch0;
+
+		if (S0){
+
+			Mode=Mode2;
+			enableButtonInterrupts();
+
+		}else{
+			Mode=Mode1;
+			disableButtonInterrupts();
+		}
+
+}
 void check_mode(){
 
 	uint8_t S0=(IORD_ALTERA_AVALON_PIO_DATA(SWITCHES_BASE)&Switch0)&Switch0;
 
 
-	if (S0 && (Mode == Mode2) ){
+	if (S0 && (Mode == Mode1) ){
 
-		Mode=Mode1;
-		enableButtonInterrupts();
-
-	}else if(!S0 && (Mode == Mode1) ){
 		Mode=Mode2;
+		enableButtonInterrupts();
+		lcd_sel_mode();
+
+	}else if(!S0 && (Mode == Mode2) ){
+		Mode=Mode1;
 		disableButtonInterrupts();
+		lcd_sel_mode();
 	}
 
 
@@ -472,11 +496,6 @@ void buttonCheck(){
 
 }
 
-
-
-
-
-
 void VRP_region(){
 	if(VRP_start){
 	   alt_alarm_start(&vrp_timer, VRP_VALUE, VRPTimerISR, timerContextVRP);
@@ -565,5 +584,11 @@ void atrialActivity(){
 	AVI_region();
 }
 
-
+void lcd_sel_mode(){
+//Used to show current mode
+	  LCD = fopen(LCD_NAME, "w");
+	  fprintf(LCD, "%c%s", ESC, CLEAR_LCD_STRING);
+	  fprintf(LCD, "Mode: %d\n", Mode);
+	  fclose(LCD);
+}
 
