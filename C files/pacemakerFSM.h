@@ -9,12 +9,12 @@
 #define PACEMAKERFSM_H_
 
 // Example timeout values in milliseconds
-#define VRP_VALUE 2000
-#define PVARP_VALUE 5000
-#define AVI_VALUE 7000
-#define AEI_VALUE 10000
-#define URI_VALUE 12000
-#define LRI_VALUE 15000
+#define VRP_VALUE 150
+#define PVARP_VALUE 50
+#define AVI_VALUE 300
+#define AEI_VALUE 800
+#define URI_VALUE 900
+#define LRI_VALUE 950
 
 
 //Functions

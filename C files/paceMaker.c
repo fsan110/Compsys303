@@ -13,6 +13,23 @@
 #include "sys/alt_alarm.h"
 #include <system.h>
 #include <altera_avalon_pio_regs.h>
+/////TEST
+#include <fcntl.h>
+//#include <unistd.h>
+//#include <stdlib.h>
+
+
+//END TEST
+#define Vp_led	0x1
+#define Ap_led	0x2
+#define No_led	0x0
+#define Mode1	1
+#define Mode2 	2
+
+//Files
+FILE* uartFile;
+FILE* LCD;
+
 
 //Peripheral Function Declarations
 void enableInterrupts();
@@ -21,10 +38,19 @@ void disableButtonInterrupts();
 void clearGreenLeds();
 void clearRedLeds();
 void buttonCheck();
+void setLeds();
+void uartInit();
+void uartCheck();
+void readUartNonBlocking();
+void uartCheck();
+void buttonCheck();
+void resetTimerFlags();
 
-/*Button Flags*/
+/*Button Flags || UART Flags*/
 uint8_t button0Flag = 1;  //Ventricle starts first. Just to get things moving on start
 uint8_t button1Flag = 0;  //As
+uint8_t uart_VFlag = 0;
+uint8_t uart_AFlag = 0;
 
 /*Time out Flags for timers */
 uint8_t URITO_flag =0;
@@ -40,6 +66,8 @@ uint8_t LRI_running = 0;
 uint8_t AVI_running = 0;
 uint8_t AEI_running = 0;
 
+//Mode
+uint8_t Mode = Mode2;
 
 //Heart Events
 void ventricleActivity();
@@ -50,6 +78,11 @@ void URI_region();
 void AVI_region();
 void AEI_region();
 void PVARP_region();
+void Run();
+void mode1();
+void mode2();
+
+
 
 
 
@@ -120,6 +153,10 @@ alt_u32 AEITimerISR(void *context){
 	return 0;
 }
 
+void uartISR(void *context){
+
+}
+
 void buttonsIsr(void* context, alt_u32 id){
 
 	uint8_t buttonValue = IORD_ALTERA_AVALON_PIO_EDGE_CAP(BUTTONS_BASE);
@@ -151,8 +188,7 @@ void enableInterrupts(){
 
 void enableButtonInterrupts()
 {
-//	uint8_t buttonValue = 1;
-//	void* context_going_to_be_passed = (void*) &buttonValue; // cast before passing to ISR
+
 	// clears the edge capture register
 	IOWR_ALTERA_AVALON_PIO_EDGE_CAP(BUTTONS_BASE, 0);
 	// enable interrupts for all buttons
@@ -179,6 +215,81 @@ void clearGreenLeds(){
 	IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE, 0x0);
 }
 
+void setLeds(){
+
+	if(Ap && Vp){
+		/*This should not happen!*/
+		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE, Ap_led + Vp_led);
+
+	}else if(Vp){
+		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE,Vp_led);
+	}else if(Ap){
+		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE,Ap_led);
+	}
+
+}
+
+void uartInit(){
+
+	uartFile = open(UART_NAME, O_NONBLOCK | O_RDWR);
+
+	if(!uartFile){
+		printf("Failed to open UART");
+	}
+
+}
+
+void sendUart(){
+	if(Ap){
+		char a = 'A';
+		write(uartFile, &a, 1);
+		//write(uartFile, 'A', 1);
+		printf("Pacing A to Machine");
+
+	}else if(Vp){
+		char v = 'V';
+		write(uartFile, &v, 1);
+		//write(uartFile, 'V', 1);
+		printf("Pacing V to Machine");
+	}
+}
+
+void uartCheck(){
+	if(uart_VFlag){
+		//printf("VSense from outside!\n");
+		Vs = 1;
+		uart_VFlag = 0;
+
+	}else{
+		Vs = 0;
+	}
+
+	if(uart_AFlag){
+		//printf("ASense from outside!\n");
+		As = 1;
+		uart_AFlag = 0;
+	}else{
+		As = 0;
+	}
+}
+
+void readUartNonBlocking(){
+	//Read sense events from heart
+	char uartBuffer[10];
+	int length = 0;
+	length = read(uartFile, uartBuffer, sizeof(uartBuffer) - 1);
+
+	if(length > 0){
+		for(int i = 0; i < length; i++){
+			if(uartBuffer[i] == 'V'){
+				uart_VFlag = 1;
+			}else if(uartBuffer[i] == 'A'){
+				uart_AFlag = 1;
+			}
+		}
+	}
+}
+
 int main()
 {
 	printf("Hello from Nios II!\n");
@@ -188,46 +299,91 @@ int main()
 	clearGreenLeds();
 	clearRedLeds();
 
+	uartInit();
+
 	//Init SCChart
 	reset();
 	tick();
 
+
 	while(1){
 
-		start_time++;
+		//Write Pace events to heart
 
+		/*uartCheck();
 
+		readUartNonBlocking();
 
-		//Get inputs VSense and ASense BEFORE tick
-		buttonCheck();
+		sendUart();*/
+		// Switches TO DO
+		//uint8_t switchValue = IOWR_ALTERA_AVALON_PIO_DATA(SWITCHES_BASE, 0x1);
 
-		resetTimerFlags();
-
-		tick();
-
-		if(Vp){
-			printf("VPaced!\n");
-			IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE, 0x1);
-			printf("%d\n",start_time);
-			start_time = 0;
-		}
-
-
-		if(Ap){
-			printf("APaced!\n");
-			IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE, 0x2);
-
-		}
-
-
-		ventricleActivity();
-
-		atrialActivity();
+		Run();
 
 	}
 	return 0;
 }
 
+void Run(){
+
+			switch(Mode){
+				case Mode1:
+					mode1();
+
+					break;
+
+				case Mode2:
+					mode2();
+					break;
+
+			}
+
+
+
+
+}
+void mode1(){
+	start_time++;
+
+	//Get inputs VSense and ASense BEFORE tick
+	buttonCheck();
+
+	resetTimerFlags();
+
+	tick();
+
+
+
+	setLeds();
+
+
+	ventricleActivity();
+
+	atrialActivity();
+
+}
+
+void mode2(){
+
+
+	uartCheck();
+
+	readUartNonBlocking();
+
+	resetTimerFlags();
+
+	sendUart();
+
+	tick();
+
+	setLeds();
+
+	ventricleActivity();
+
+	atrialActivity();
+
+
+}
 //TO DO
 void resetTimerFlags(){
 	if(VRPTO_flag){
@@ -235,6 +391,7 @@ void resetTimerFlags(){
 		printf("VRP timed out!\n");
 		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 1);
 		VRPTO_flag = 0;
+		/* If we want to turn off all leds at start*/
 		clearGreenLeds();
 	}else{
 		VRPTO = 0;
@@ -304,6 +461,10 @@ void buttonCheck(){
 	}
 
 }
+
+
+
+
 
 
 void VRP_region(){
