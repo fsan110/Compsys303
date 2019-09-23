@@ -7,15 +7,17 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "pacemakerFSM.h"
+
 #include <alt_types.h> // alt_u32 is a kind of alt_types
 #include <sys/alt_irq.h> // to register interrupts
 #include "sys/alt_alarm.h"
 #include <system.h>
 #include <altera_avalon_pio_regs.h>
-
+//FSM
+#include "pacemakerFSM.h"
 //For Uart functionality read() and write() (and open() to init as non blocking)
 #include <fcntl.h>
+
 //Switches
 #define Switch0 0x01
 //LEDS

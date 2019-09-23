@@ -1,6 +1,6 @@
 # Compsys303 Assignment 2
 This assignment involves designing a pacemaker controller on a Altera(DE2-115) FPGA 
-with two modes. 
+with two modes. Refer to presentation for design information.
 
 ## Run instructions
 * Connect FPGA to PC using blaster and UART via RS232 cable
@@ -24,5 +24,5 @@ Buttons 0 and 1 are used to provide VSense and ASense signals. If a VSense or AS
 the pacemaker provides a VPace or APace. Green Led 0 and 1 turn high for VPace and APace respectively.
 
 ### Mode 2(SW0 is high)
-Run pacemaker.exe to open virtual heart. One can test pacemaker against three diseases.
+Run CS303-Heart.exe to open virtual heart. One can test pacemaker against three diseases.
 
