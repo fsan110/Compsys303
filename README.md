@@ -7,10 +7,10 @@ with two modes. Refer to presentation for design information.
 * Open Quartus Prime Programmer and click on Add File to add the cs303.sof for programming the nios processor
 * Open nios2 build tools for eclipse. Click on File -> New -> Nios II application for BSP and from Template. Select nios2_system.sopcinfo, 
   select cpu, name project and select Hello World from template.
-* Add a new C source and header file in Nios II.
-* Copy-paste the code from paceMaker.c into hello_world.c and rename the file to paceMaker.c
+* Add a new C source and header file in Nios II. Name them pacemakerFSM.h and pacemakerFSM.c.
+* Copy-paste pacemakerFSM header and source file content into the blank files.
+* Copy-paste the code from paceMaker.c into hello_world.c and rename the file to paceMaker.c.
 * Change Makefile C_SRC hello_world.c to paceMaker.c
-* Follow above steps for pacemakerFSM.h and pacemakerFSM.c(No changes to be made for pacemake.FSM.h in makeFile)
 
 Alternatively one can:
 * In project explorer, right click -> import -> Nios II Software Build Tools Project -> Import Nios II Software Build Tools Project
