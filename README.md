@@ -14,7 +14,7 @@ with two modes. Refer to presentation for design information.
 
 Alternatively one can:
 * In project explorer, right click -> import -> Nios II Software Build Tools Project -> Import Nios II Software Build Tools Project
-  Choose Assignment1, tick on clean project when importing and repeat process for Assignment1_bsp
+  Choose DDDPacemaker, tick on clean project when importing and repeat process for DDDPacemaker_bsp
 
 ## Note
 include <fcnt1.h>. Statement for mode2 exists in paceMaker.c. 
