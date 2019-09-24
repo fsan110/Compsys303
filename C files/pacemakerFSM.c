@@ -167,31 +167,31 @@ char g102;
 char g103;
 char g104;
 char g105;
+char g105b;
 char g106;
-char g106b;
 char g107;
 char g108;
 char g109;
+char PRE_g109;
 char g110;
-char PRE_g110;
 char g111;
 char g112;
 char g113;
 char g114;
+char PRE_g114;
 char g115;
-char PRE_g115;
 char g116;
 char g117;
+char g117b;
 char g118;
-char g118b;
 char g119;
+char PRE_g119;
 char g120;
-char PRE_g120;
 char g121;
 char g122;
 char g123;
+char PRE_g123;
 char g124;
-char PRE_g124;
 char g125;
 char g126;
 char g127;
@@ -201,11 +201,10 @@ char g130;
 char g131;
 char g132;
 char g133;
+char PRE_g133;
 char g134;
-char PRE_g134;
 char g135;
 char g136;
-char g137;
 char _GO;
 char _cg28;
 char _cg5;
@@ -235,11 +234,10 @@ char _cg59;
 char _cg57;
 char _cg65;
 char _cg63;
-char _cg105;
-char _cg69;
 char _cg104;
-char _cg70;
+char _cg69;
 char _cg103;
+char _cg71;
 char _cg96;
 char _cg75;
 char _cg78;
@@ -257,34 +255,34 @@ char _cg90;
 char _cg94;
 char _cg101;
 char _cg99;
-char _cg129;
-char _cg122;
-char _cg111;
-char _cg114;
-char _cg116;
-char _cg119;
+char _cg128;
 char _cg121;
+char _cg110;
 char _cg113;
-char _cg117;
-char _cg127;
-char _cg125;
+char _cg115;
+char _cg118;
+char _cg120;
+char _cg112;
+char _cg116;
+char _cg126;
+char _cg124;
 char g13_e1;
 char g24_e2;
 char g39_e1;
 char g50_e2;
 char g76_e1;
 char g100_e2;
-char g112_e1;
-char g126_e2;
+char g111_e1;
+char g125_e2;
 char g6_e1;
 char g32_e2;
 char g58_e3;
 char g64_e4;
-char g71_e5;
-char g130_e6;
-char g132_e1_fix;
-char g132_e1;
-char g136_e2;
+char g70_e5;
+char g129_e6;
+char g131_e1_fix;
+char g131_e1;
+char g135_e2;
 int _PRE_GO;
 void reset(){
    _GO = 1;
@@ -306,11 +304,11 @@ void reset(){
    PRE_g88 = 0;
    PRE_g92 = 0;
    PRE_g98 = 0;
-   PRE_g110 = 0;
-   PRE_g115 = 0;
-   PRE_g120 = 0;
-   PRE_g124 = 0;
-   PRE_g134 = 0;
+   PRE_g109 = 0;
+   PRE_g114 = 0;
+   PRE_g119 = 0;
+   PRE_g123 = 0;
+   PRE_g133 = 0;
    return;
 }
 void tick(){
@@ -327,12 +325,11 @@ void tick(){
       g6_e1 =(!((g5||g12||g23||g17)));
       _cg5 = Rst;
       g13_e1 =(!((g12||g17)));
-      _cg17 = Rst;
       _cg12 = Rst;
-      g135 =(PRE_g134);
-      g133 = g0;
-      g134 =(g135||g133);
-      if(g134){
+      g132 = g0;
+      g134 =(PRE_g133);
+      g133 =(g132||g134);
+      if(g133){
          Vp = 0;
          Ap = 0;
          VRP_start = 0;
@@ -362,20 +359,6 @@ void tick(){
       if(g34){
          start_VTimers =(start_VTimers||1);
       }
-      g69 =(PRE_g68);
-      _cg69 = Rst;
-      g104 =(g69&&(!(_cg69)));
-      _cg104 = start_VTimers;
-      g105 =(g104&&(!(_cg104)));
-      _cg105 = AVITO;
-      g106 =(g105&&_cg105);
-      if(g106){
-         Vp =(Vp||1);
-      }
-      g106b = g106;
-      if(g106b){
-         start_VTimers =(start_VTimers||1);
-      }
       g80 =(PRE_g79);
       _cg80 = Rst;
       g81 =(g80&&(!(_cg80)));
@@ -402,6 +385,20 @@ void tick(){
       if(g95b){
          start_VTimers =(start_VTimers||1);
       }
+      g69 =(PRE_g68);
+      _cg69 = Rst;
+      g71 =(g69&&(!(_cg69)));
+      _cg71 = start_VTimers;
+      g104 =(g71&&(!(_cg71)));
+      _cg104 = AVITO;
+      g105 =(g104&&_cg104);
+      if(g105){
+         Vp =(Vp||1);
+      }
+      g105b = g105;
+      if(g105b){
+         start_VTimers =(start_VTimers||1);
+      }
       g57 =(PRE_g56);
       _cg57 = Rst;
       g59 =(g57&&(!(_cg57)));
@@ -423,19 +420,20 @@ void tick(){
       }
       g14 =(g12&&(!(_cg12)));
       _cg14 = PVARPTO;
-      g20 =(g14&&(!(_cg14)));
-      _cg20 = _pacemaker2_local__trig;
+      _cg17 = Rst;
       g18 =(g17&&(!(_cg17)));
       _cg18 = As;
       g19 =(g18&&_cg18);
       if(g19){
          start_ATimers =(start_ATimers||1);
       }
-      g15 =((g18&&(!(_cg18)))||(g14&&_cg14)||g19);
+      g15 =((g14&&_cg14)||g19||(g18&&(!(_cg18))));
       _cg15 = _pacemaker2_local__trig;
-      g13 =((g17&&_cg17)||(g12&&_cg12)||(g20&&_cg20)||(g15&&_cg15));
+      g20 =(g14&&(!(_cg14)));
+      _cg20 = _pacemaker2_local__trig;
+      g13 =((g12&&_cg12)||(g15&&_cg15)||(g20&&_cg20)||(g17&&_cg17));
       g24_e2 =(!(g23));
-      g24 =(g26||(g23&&_cg23));
+      g24 =((g23&&_cg23)||g26);
       g27 =((g13_e1||g13)&&(g24_e2||g24)&&(g13||g24));
       _cg27 = Rst;
       g6 =((g5&&_cg5)||(g27&&_cg27));
@@ -443,7 +441,6 @@ void tick(){
       g49 =(PRE_g48);
       g32_e2 =(!((g31||g38||g49||g43)));
       g39_e1 =(!((g38||g43)));
-      _cg38 = Rst;
       _cg49 = Rst;
       g51 =(g49&&(!(_cg49)));
       _cg51 = VRP_start;
@@ -451,18 +448,19 @@ void tick(){
       if(g52){
          _pacemaker2_local__trig2 = 1;
       }
+      _cg38 = Rst;
       g40 =(g38&&(!(_cg38)));
       _cg40 = VRPTO;
-      g41 =((g40&&_cg40)||g45||(g44&&(!(_cg44))));
-      _cg41 = _pacemaker2_local__trig2;
       g46 =(g40&&(!(_cg40)));
       _cg46 = _pacemaker2_local__trig2;
-      g39 =((g38&&_cg38)||(g43&&_cg43)||(g41&&_cg41)||(g46&&_cg46));
+      g41 =(g45||(g44&&(!(_cg44)))||(g40&&_cg40));
+      _cg41 = _pacemaker2_local__trig2;
+      g39 =((g46&&_cg46)||(g43&&_cg43)||(g41&&_cg41)||(g38&&_cg38));
       g50_e2 =(!(g49));
       g50 =((g49&&_cg49)||g52);
       g53 =((g39_e1||g39)&&(g50_e2||g50)&&(g39||g50));
       _cg53 = Rst;
-      g32 =((g53&&_cg53)||(g31&&_cg31));
+      g32 =((g31&&_cg31)||(g53&&_cg53));
       g58_e3 =(!(g57));
       g58 =(g57&&_cg57);
       g63 =(PRE_g62);
@@ -473,9 +471,7 @@ void tick(){
       g99 =(PRE_g98);
       g84 =(PRE_g83);
       g89 =(PRE_g88);
-      g71_e5 =(!((g69||g75||g99||g80||g93||g84||g89)));
-      g70 =(g106b||(g104&&_cg104)||(g69&&_cg69));
-      _cg70 = Rst;
+      g70_e5 =(!((g69||g75||g99||g80||g93||g84||g89)));
       g76_e1 =(!((g75||g80||g93||g84||g89)));
       g60b = g60;
       if(g60b){
@@ -488,44 +484,46 @@ void tick(){
       if(g102){
          _pacemaker2_local__trig3 = 1;
       }
+      _cg84 = Rst;
+      g82 =((g84&&(!(_cg84)))||(g81&&_cg81));
+      _cg82 = _pacemaker2_local__trig3;
       _cg75 = Rst;
       g77 =(g75&&(!(_cg75)));
       _cg77 = URITO;
-      g78 =((g77&&_cg77)||(g85&&(!(_cg85))));
-      _cg78 = _pacemaker2_local__trig3;
       g90 =(g77&&(!(_cg77)));
       _cg90 = AVITO;
-      g96 =(g90&&(!(_cg90)));
-      _cg96 = _pacemaker2_local__trig3;
-      _cg84 = Rst;
-      g82 =((g81&&_cg81)||(g84&&(!(_cg84))));
-      _cg82 = _pacemaker2_local__trig3;
-      _cg89 = Rst;
       g91 =((g94&&(!(_cg94)))||(g90&&_cg90));
       _cg91 = _pacemaker2_local__trig3;
-      g87 =((g89&&(!(_cg89)))||g95b||g86b);
+      _cg89 = Rst;
+      g87 =(g95b||(g89&&(!(_cg89)))||g86b);
       _cg87 = _pacemaker2_local__trig3;
-      g76 =((g78&&_cg78)||(g80&&_cg80)||(g96&&_cg96)||(g82&&_cg82)||(g75&&_cg75)||(g89&&_cg89)||(g84&&_cg84)||(g91&&_cg91)||(g93&&_cg93)||(g87&&_cg87));
+      g78 =((g77&&_cg77)||(g85&&(!(_cg85))));
+      _cg78 = _pacemaker2_local__trig3;
+      g96 =(g90&&(!(_cg90)));
+      _cg96 = _pacemaker2_local__trig3;
+      g76 =((g82&&_cg82)||(g91&&_cg91)||(g80&&_cg80)||(g87&&_cg87)||(g84&&_cg84)||(g75&&_cg75)||(g78&&_cg78)||(g93&&_cg93)||(g89&&_cg89)||(g96&&_cg96));
       g100_e2 =(!(g99));
       g100 =((g99&&_cg99)||g102);
       g103 =((g76_e1||g76)&&(g100_e2||g100)&&(g76||g100));
       _cg103 = Rst;
-      g71 =((g70&&_cg70)||(g103&&_cg103));
-      g111 =(PRE_g110);
-      g125 =(PRE_g124);
-      g116 =(PRE_g115);
-      g121 =(PRE_g120);
-      g130_e6 =(!((g111||g125||g116||g121)));
-      g112_e1 =(!((g111||g116||g121)));
+      g70 =((g103&&_cg103)||(g69&&_cg69));
+      g110 =(PRE_g109);
+      g124 =(PRE_g123);
+      g115 =(PRE_g114);
+      g120 =(PRE_g119);
+      g129_e6 =(!((g110||g124||g115||g120)));
+      g111_e1 =(!((g110||g115||g120)));
+      _cg110 = Rst;
+      _cg120 = Rst;
       g60d = g60;
       if(g60d){
          AEI_start =(AEI_start||1);
       }
-      _cg125 = Rst;
-      g127 =(g125&&(!(_cg125)));
-      _cg127 = AEI_start;
-      g128 =(g127&&_cg127);
-      if(g128){
+      _cg124 = Rst;
+      g126 =(g124&&(!(_cg124)));
+      _cg126 = AEI_start;
+      g127 =(g126&&_cg126);
+      if(g127){
          _pacemaker2_local__trig4 = 1;
       }
       g7 =(g5&&(!(_cg5)));
@@ -534,48 +532,46 @@ void tick(){
       if(g8){
          start_ATimers =(start_ATimers||1);
       }
-      _cg111 = Rst;
-      g113 =(g111&&(!(_cg111)));
-      _cg113 = start_ATimers;
-      g117 =(g113&&(!(_cg113)));
-      _cg117 = AEITO;
-      g122 =(g117&&(!(_cg117)));
-      _cg122 = _pacemaker2_local__trig4;
-      _cg121 = Rst;
-      _cg116 = Rst;
-      g114 =((g113&&_cg113)||(g116&&(!(_cg116))));
-      _cg114 = _pacemaker2_local__trig4;
-      g118 =(g117&&_cg117);
-      if(g118){
+      g112 =(g110&&(!(_cg110)));
+      _cg112 = start_ATimers;
+      g116 =(g112&&(!(_cg112)));
+      _cg116 = AEITO;
+      g121 =(g116&&(!(_cg116)));
+      _cg121 = _pacemaker2_local__trig4;
+      g117 =(g116&&_cg116);
+      if(g117){
          Ap =(Ap||1);
       }
-      g118b = g118;
-      if(g118b){
+      g117b = g117;
+      if(g117b){
          start_ATimers =(start_ATimers||1);
       }
-      g119 =((g121&&(!(_cg121)))||g118b);
-      _cg119 = _pacemaker2_local__trig4;
-      g112 =((g122&&_cg122)||(g121&&_cg121)||(g114&&_cg114)||(g119&&_cg119)||(g111&&_cg111)||(g116&&_cg116));
-      g126_e2 =(!(g125));
-      g126 =((g125&&_cg125)||g128);
-      g129 =((g112_e1||g112)&&(g126_e2||g126)&&(g112||g126));
-      _cg129 = Rst;
-      g130 =(g129&&_cg129);
-      g131 =((g6_e1||g6)&&(g32_e2||g32)&&(g58_e3||g58)&&(g64_e4||g64)&&(g71_e5||g71)&&(g130_e6||g130)&&(g6||g32||g58||g64||g71||g130));
-      g2 =(g131||g1);
+      g118 =(g117b||(g120&&(!(_cg120))));
+      _cg118 = _pacemaker2_local__trig4;
+      _cg115 = Rst;
+      g113 =((g112&&_cg112)||(g115&&(!(_cg115))));
+      _cg113 = _pacemaker2_local__trig4;
+      g111 =((g110&&_cg110)||(g120&&_cg120)||(g121&&_cg121)||(g118&&_cg118)||(g113&&_cg113)||(g115&&_cg115));
+      g125_e2 =(!(g124));
+      g125 =(g127||(g124&&_cg124));
+      g128 =((g111_e1||g111)&&(g125_e2||g125)&&(g111||g125));
+      _cg128 = Rst;
+      g129 =(g128&&_cg128);
+      g130 =((g6_e1||g6)&&(g32_e2||g32)&&(g58_e3||g58)&&(g64_e4||g64)&&(g70_e5||g70)&&(g129_e6||g129)&&(g6||g32||g58||g64||g70||g129));
+      g2 =(g1||g130);
       g3 = g2;
       g28 =(g7&&(!(_cg7)));
       _cg28 = PVARP_start;
       g4 =((g28&&(!(_cg28)))||g3);
-      g9 =((g27&&(!(_cg27)))||g8||(g28&&_cg28));
+      g9 =((g27&&(!(_cg27)))||(g28&&_cg28)||g8);
       if(g9){
          _pacemaker2_local__trig = 0;
       }
       g10 = g9;
-      g11 =((g20&&(!(_cg20)))||g10);
+      g11 =(g10||(g20&&(!(_cg20))));
       g16 =(g15&&(!(_cg15)));
       g21 = g9;
-      g22 =(g21||(g25&&(!(_cg25))));
+      g22 =((g25&&(!(_cg25)))||g21);
       g29 = g2;
       g54 =(g33&&(!(_cg33)));
       _cg54 = VRP_start;
@@ -585,10 +581,10 @@ void tick(){
          _pacemaker2_local__trig2 = 0;
       }
       g36 = g35;
-      g37 =((g46&&(!(_cg46)))||g36);
+      g37 =(g36||(g46&&(!(_cg46))));
       g42 =(g41&&(!(_cg41)));
       g47 = g35;
-      g48 =(g47||(g51&&(!(_cg51))));
+      g48 =((g51&&(!(_cg51)))||g47);
       g55 = g2;
       g60f = g60;
       if(g60f){
@@ -610,10 +606,10 @@ void tick(){
       if(g66b){
          AEI_stop =(AEI_stop||1);
       }
-      g62 =(g61||g66b||(g65&&(!(_cg65))));
+      g62 =(g66b||(g65&&(!(_cg65)))||g61);
       g67 = g2;
-      g68 =(g67||(g105&&(!(_cg105))));
-      g72 =((g103&&(!(_cg103)))||(g70&&(!(_cg70))));
+      g68 =(g67||(g104&&(!(_cg104))));
+      g72 =((g103&&(!(_cg103)))||g105b||(g71&&_cg71));
       if(g72){
          _pacemaker2_local__trig3 = 0;
       }
@@ -625,20 +621,20 @@ void tick(){
       g92 =(g91&&(!(_cg91)));
       g97 = g72;
       g98 =(g97||(g101&&(!(_cg101))));
-      g107 = g2;
-      g108 =(g107||(g129&&(!(_cg129))));
-      if(g108){
+      g106 = g2;
+      g107 =(g106||(g128&&(!(_cg128))));
+      if(g107){
          _pacemaker2_local__trig4 = 0;
       }
-      g109 = g108;
-      g110 =(g109||(g122&&(!(_cg122))));
-      g115 =(g114&&(!(_cg114)));
-      g120 =(g119&&(!(_cg119)));
-      g123 = g108;
-      g124 =(g123||(g127&&(!(_cg127))));
-      g132_e1_fix =(g99||g12||g23||g38||g49||g116||g80||g121||g17||g43||g93||g84);
-      g132_e1 =(!((g5||g31||g57||g63||g69||g111||g125||g75||g89||g132_e1_fix)));
-      g136_e2 =(!(g135));
+      g108 = g107;
+      g109 =(g108||(g121&&(!(_cg121))));
+      g114 =(g113&&(!(_cg113)));
+      g119 =(g118&&(!(_cg118)));
+      g122 = g107;
+      g123 =(g122||(g126&&(!(_cg126))));
+      g131_e1_fix =(g99||g12||g23||g38||g49||g115||g80||g120||g17||g43||g93||g84);
+      g131_e1 =(!((g5||g31||g57||g63||g69||g110||g124||g75||g89||g131_e1_fix)));
+      g135_e2 =(!(g134));
    }
    PRE_g4 = g4;
    PRE_g11 = g11;
@@ -657,11 +653,11 @@ void tick(){
    PRE_g88 = g88;
    PRE_g92 = g92;
    PRE_g98 = g98;
-   PRE_g110 = g110;
-   PRE_g115 = g115;
-   PRE_g120 = g120;
-   PRE_g124 = g124;
-   PRE_g134 = g134;
+   PRE_g109 = g109;
+   PRE_g114 = g114;
+   PRE_g119 = g119;
+   PRE_g123 = g123;
+   PRE_g133 = g133;
    _PRE_GO = _GO;
    return;
 }

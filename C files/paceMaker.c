@@ -125,7 +125,7 @@ alt_alarm avi_timer;
 uint8_t timeCountMainAVI = 0;
 void* timerContextAVI = (void*) &timeCountMainAVI;
 
-//
+//VPace time when ASense is asserted in mode1
 int start_time=0;
 
 
@@ -424,6 +424,7 @@ void resetTimerFlags(){
 	if(VRPTO_flag){
 		VRPTO = 1;
 		VRPTO_flag = 0;
+		VRP_running = 0;
 		printf("VRP timed out!\n");
 		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 1);
 		/* If we want to turn off all leds at start*/
@@ -435,6 +436,7 @@ void resetTimerFlags(){
 	if(PVARPTO_flag){
 		PVARPTO = 1;
 		PVARPTO_flag = 0;
+		PVARP_running = 0;
 		printf("PVARP timed out!\n");
 		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 2);
 
@@ -445,6 +447,7 @@ void resetTimerFlags(){
 	if(AVITO_flag){
 		AVITO = 1;
 		AVITO_flag = 0;
+		AVI_running = 0;
 		printf("AVI timed out!\n");
 		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 4);
 
@@ -455,6 +458,7 @@ void resetTimerFlags(){
 	if(AEITO_flag){
 		AEITO = 1;
 		AEITO_flag = 0;
+		AEI_running = 0;
 		printf("AEI timed out!\n");
 		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 8);
 	}else{
@@ -463,9 +467,11 @@ void resetTimerFlags(){
 
 	if(URITO_flag){
 		URITO = 1;
+		URITO_flag = 0;
+		URI_running = 0;
 		printf("URI timed out!\n");
 		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 16);
-		URITO_flag = 0;
+
 	}else{
 		URITO = 0;
 	}
@@ -473,6 +479,7 @@ void resetTimerFlags(){
 	if(LRITO_flag){
 		LRITO = 1;
 		LRITO_flag = 0;
+		LRI_running = 0;
 		printf("LRI timed out!\n");
 		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 32);
 	}else{
@@ -483,6 +490,7 @@ void resetTimerFlags(){
 void buttonCheck(){
 	if(button0Flag){
 		Vs = 1;
+		printf("VSense!\n");
 		button0Flag = 0;
 
 	}else{
@@ -491,6 +499,7 @@ void buttonCheck(){
 
 	if(button1Flag){
 		As = 1;
+		printf("ASense!\n");
 		button1Flag = 0;
 	}else{
 		As = 0;
@@ -582,8 +591,8 @@ void AVI_region(){
 
 		if(AVI_running){
 			alt_alarm_stop(&avi_timer);
+			AVI_running = 0;
 			printf("AVI stopped!\n");
-
 		}
 
 		alt_alarm_start(&avi_timer, AVI_VALUE, AVITimerISR, timerContextAVI);

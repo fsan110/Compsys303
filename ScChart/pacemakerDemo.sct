@@ -15,9 +15,7 @@ output signal AVI_stop, AEI_stop;
 	
 	
 	initial state ControlUnit{
-	  //Should be output
-		
-		
+	  
 		region ASense_FSM:
 			 
 			 	initial state init
@@ -33,7 +31,7 @@ output signal AVI_stop, AEI_stop;
 	      		 }
 	      		  
 	      		 --> Loop with PVARP_start;
-	    //@hide
+	    
 	    region VSense_FSM:
 	      		initial state init
 	      		 	o-> Loop with Vs / start_VTimers
@@ -45,59 +43,31 @@ output signal AVI_stop, AEI_stop;
 	      		     	--> VRP_over with VRPTO;
 	      		     
 	      		     state VRP_over
-	      		     	//--> URI_over with URITO;
-	      		     	--> VRP_over with Vs / start_VTimers;
 	      		     	
-//	      		     state URI_over
-//	      		     	--> URI_over with Vs / start_VTimers;
+	      		     	--> VRP_over with Vs / start_VTimers;
+	      		     
 	      		 }
 	      		  
 	      		 --> Loop with VRP_start;
-	    //@hide 			
+	   			
 	    region V_Timers:
-//		   initial state init
-//		   		--> startVTimers with start_VTimers / VRP_start; URI_start; LRI_start; AEI_start;PVARP_start;AVI_stop;
-//		   		
-//	   		state startVTimers
-//	   		
-//	   			-->init ;
 
 		 initial state startVTimers
 	   		--> startVTimers with start_VTimers / VRP_start; URI_start; LRI_start; AEI_start;PVARP_start;AVI_stop;
 		   		
 		region A_Timers:
 	    
-	    
-//		   initial state init
-//		   		--> startATimers with start_ATimers / AVI_start; AEI_stop;
-//		   		
-//		   		state startATimers
-//		   		--> init with start_VTimers / AVI_stop;
-		   		
-//		   initial state init
-//		   		--> startATimers with start_ATimers / AVI_start; AEI_stop;
-		   	
 		   	initial state startATimers
-		   		//--> init;
+		   	
 		   		--> startATimers with start_ATimers / AVI_start; AEI_stop;
 		
 		region VPace_FSM:		
-			
-			initial state beforeVsignal{
-			  	region beforeV:
-			  	
-			  	initial state init
-			  		o-> finish with start_VTimers
-			  		--> finish with AVITO / Vp; start_VTimers;
-			  		
-			  	final state finish;
-			}
-			
-			
-		
-			
-			>-> afterVsignal;
-			
+						
+		  	initial state init
+		  		--> afterVsignal with start_VTimers
+		  		--> afterVsignal with AVITO / Vp; start_VTimers;
+		  		
+		  		
 			state afterVsignal{
 			  
 			  	region afterV:
@@ -121,12 +91,7 @@ output signal AVI_stop, AEI_stop;
 			
 			--> afterVsignal with URI_start;
 
-		region APace_FSM:
-			
-			
-			  	
-			  	
-		  	
+		region APace_FSM:  	
 		  			
 			initial state AEI{
 			  	initial state waitAEI
