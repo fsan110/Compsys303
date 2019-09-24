@@ -19,10 +19,12 @@ Alternatively one can:
 ## Note
 include <fcnt1.h>. Statement for mode2 exists in paceMaker.c. 
 
+
 ### Mode 1(SW0 is low)
 Buttons 0 and 1 are used to provide VSense and ASense signals. If a VSense or ASense is not provided within the timing constraints,
 the pacemaker provides a VPace or APace. Green Led 0 and 1 turn high for VPace and APace respectively.
 
 ### Mode 2(SW0 is high)
-Run CS303-Heart.exe to open virtual heart. One can test pacemaker against three diseases.
+Run CS303-Heart.exe to open virtual heart. One can test pacemaker against various diseases. Green leds are still enabled. 
+Button interrupts are disabled.
 

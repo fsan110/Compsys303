@@ -49,6 +49,7 @@ void readUartNonBlocking();
 void uartCheck();
 void buttonCheck();
 void resetTimerFlags();
+void registerButtonInterrupts();
 
 /*Button Flags || UART Flags*/
 uint8_t button0Flag = 0;  //Ventricle starts first. Just to get things moving on start
