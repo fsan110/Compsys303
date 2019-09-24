@@ -45,10 +45,11 @@ output signal AVI_stop, AEI_stop;
 	      		     	--> VRP_over with VRPTO;
 	      		     
 	      		     state VRP_over
-	      		     	--> URI_over with URITO;
+	      		     	//--> URI_over with URITO;
+	      		     	--> VRP_over with Vs / start_VTimers;
 	      		     	
-	      		     state URI_over
-	      		     	--> URI_over with Vs / start_VTimers;
+//	      		     state URI_over
+//	      		     	--> URI_over with Vs / start_VTimers;
 	      		 }
 	      		  
 	      		 --> Loop with VRP_start;
