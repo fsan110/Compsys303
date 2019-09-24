@@ -55,23 +55,31 @@ output signal AVI_stop, AEI_stop;
 	      		 --> Loop with VRP_start;
 	    //@hide 			
 	    region V_Timers:
-		   initial state init
-		   		--> startVTimers with start_VTimers / VRP_start; URI_start; LRI_start; AEI_start;PVARP_start;
-		   		
-	   		state startVTimers
-	   		
-	   			-->init ;
+//		   initial state init
+//		   		--> startVTimers with start_VTimers / VRP_start; URI_start; LRI_start; AEI_start;PVARP_start;AVI_stop;
+//		   		
+//	   		state startVTimers
+//	   		
+//	   			-->init ;
+
+		 initial state startVTimers
+	   		--> startVTimers with start_VTimers / VRP_start; URI_start; LRI_start; AEI_start;PVARP_start;AVI_stop;
 		   		
 		region A_Timers:
 	    
 	    
-		   initial state init
+//		   initial state init
+//		   		--> startATimers with start_ATimers / AVI_start; AEI_stop;
+//		   		
+//		   		state startATimers
+//		   		--> init with start_VTimers / AVI_stop;
+		   		
+//		   initial state init
+//		   		--> startATimers with start_ATimers / AVI_start; AEI_stop;
+		   	
+		   	initial state startATimers
+		   		//--> init;
 		   		--> startATimers with start_ATimers / AVI_start; AEI_stop;
-		   		
-		   		state startATimers
-		   		--> init with start_VTimers / AVI_stop;
-		   		
-		   		 
 		
 		region VPace_FSM:		
 			

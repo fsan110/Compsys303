@@ -319,9 +319,6 @@ int main()
 
 	while(1){
 
-
-
-
 		Run();
 
 	}
@@ -368,9 +365,7 @@ void check_mode(){
 
 	uint8_t S0=(IORD_ALTERA_AVALON_PIO_DATA(SWITCHES_BASE)&Switch0)&Switch0;
 
-
 	if (S0 && (Mode == Mode1) ){
-
 		Mode=Mode2;
 		disableButtonInterrupts();
 		lcd_sel_mode();
@@ -378,14 +373,10 @@ void check_mode(){
 
 	}else if(!S0 && (Mode == Mode2) ){
 		Mode=Mode1;
-
 		enableButtonInterrupts();
 		lcd_sel_mode();
 		printf("Mode Switched %d", Mode);
 	}
-
-
-
 
 }
 
@@ -560,7 +551,7 @@ void AEI_region(){
 			alt_alarm_stop(&aei_timer);
 			printf("AEI stopped!\n");
 			AEI_running = 0;
-			printf("AEI should not be running !");
+
 		}
 			alt_alarm_start(&aei_timer, AEI_VALUE, AEITimerISR, timerContextAEI);
 			AEI_running = 1;
@@ -592,7 +583,7 @@ void AVI_region(){
 		if(AVI_running){
 			alt_alarm_stop(&avi_timer);
 			printf("AVI stopped!\n");
-			printf("AVI should not be running!");
+
 		}
 
 		alt_alarm_start(&avi_timer, AVI_VALUE, AVITimerISR, timerContextAVI);
