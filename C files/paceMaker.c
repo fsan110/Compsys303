@@ -69,6 +69,10 @@ uint8_t AVITO_flag = 0;
 uint8_t LRI_running = 0;
 uint8_t AVI_running = 0;
 uint8_t AEI_running = 0;
+//Fixed timers. Stop on VSense and VRPTO has happened
+uint8_t VRP_running = 0;
+uint8_t PVARP_running = 0;
+uint8_t URI_running = 0;
 
 //Mode
 uint8_t Mode = Mode1;
@@ -182,13 +186,9 @@ void buttonsIsr(void* context, alt_u32 id){
 	printf("Button %d \n ", buttonValue);
 }
 
-void enableInterrupts(){
-  //@detail Initialises buttons and registers for ISR
-  //	    Buttons are Heart Events
 
-  enableButtonInterrupts();
-
-
+void registerButtonInterrupts(){
+	alt_irq_register(BUTTONS_IRQ,NULL, buttonsIsr);
 }
 
 void enableButtonInterrupts()
@@ -199,7 +199,7 @@ void enableButtonInterrupts()
 	// enable interrupts for all buttons
 	IOWR_ALTERA_AVALON_PIO_IRQ_MASK(BUTTONS_BASE, 0x3);
 
-	alt_irq_register(BUTTONS_IRQ,NULL, buttonsIsr);
+
 }
 
 void disableButtonInterrupts()
@@ -306,7 +306,8 @@ int main()
 
 	uartInit();
 
-
+	//Register button ISR
+	registerButtonInterrupts();
 
 	init_mode();
 
@@ -329,6 +330,7 @@ int main()
 
 void Run(){
 			check_mode();
+			//printf("Inside Run!");
 			switch(Mode){
 				case Mode1:
 					mode1();
@@ -351,7 +353,7 @@ void init_mode(){
 
 		if (S0){
 			Mode=Mode2;
-			disableButtonInterrupts();
+            disableButtonInterrupts();
 			//Init mode button flags stay low
 			button0Flag = 0;
 			button1Flag = 0;
@@ -372,12 +374,14 @@ void check_mode(){
 		Mode=Mode2;
 		disableButtonInterrupts();
 		lcd_sel_mode();
+		printf("Mode Switched %d", Mode);
 
 	}else if(!S0 && (Mode == Mode2) ){
 		Mode=Mode1;
 
 		enableButtonInterrupts();
 		lcd_sel_mode();
+		printf("Mode Switched %d", Mode);
 	}
 
 
@@ -408,10 +412,7 @@ void mode2(){
 	//Read UART first
 	readUartNonBlocking();
 
-	sendUart();
-
 	uartCheck();
-
 
 	resetTimerFlags();
 
@@ -422,7 +423,7 @@ void mode2(){
 
 	atrialActivity();
 
-	//sendUart();
+	sendUart();
 
 	setLeds();
 
@@ -508,14 +509,26 @@ void buttonCheck(){
 
 void VRP_region(){
 	if(VRP_start){
+
+	 if(VRP_running){
+		 alt_alarm_stop(&vrp_timer);
+		 VRP_running = 0;
+	 }
+
 	   alt_alarm_start(&vrp_timer, VRP_VALUE, VRPTimerISR, timerContextVRP);
+	   VRP_running = 1;
 	   printf("VRP started!\n");
 	}
 }
 
 void URI_region(){
 	if(URI_start){
+		if(URI_running){
+			alt_alarm_stop(&uri_timer);
+			URI_running = 0;
+		}
 		alt_alarm_start(&uri_timer, URI_VALUE, URITimerISR, timerContextURI);
+		URI_running = 1;
 		printf("URI started!\n");
 	}
 }
@@ -544,7 +557,9 @@ void AEI_region(){
 	}else if(AEI_start){
 
 		if(AEI_running){
-
+			alt_alarm_stop(&aei_timer);
+			printf("AEI stopped!\n");
+			AEI_running = 0;
 			printf("AEI should not be running !");
 		}
 			alt_alarm_start(&aei_timer, AEI_VALUE, AEITimerISR, timerContextAEI);
@@ -555,7 +570,13 @@ void AEI_region(){
 
 void PVARP_region(){
 	if(PVARP_start){
+
+		if(PVARP_running){
+			alt_alarm_stop(&pvarp_timer);
+			PVARP_running = 0;
+		}
 		alt_alarm_start(&pvarp_timer, PVARP_VALUE, PVARPTimerISR, timerContextPVARP);
+		PVARP_running = 1;
 		printf("PVARP started!\n");
 	}
 }
@@ -569,7 +590,8 @@ void AVI_region(){
 	}else if(AVI_start){
 
 		if(AVI_running){
-
+			alt_alarm_stop(&avi_timer);
+			printf("AVI stopped!\n");
 			printf("AVI should not be running!");
 		}
 
