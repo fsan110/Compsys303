@@ -20,7 +20,11 @@ output signal AVI_stop, AEI_stop;
 		
 		region ASense_FSM:
 			 
-	      		 initial state Loop{
+			 	initial state init
+			  		o-> Loop with As / start_ATimers
+			  		--> Loop with PVARP_start;
+			 
+	      		state Loop{
 	      		     initial state init
 	      		     	--> PVARP_over with PVARPTO;
 	      		     
@@ -32,7 +36,8 @@ output signal AVI_stop, AEI_stop;
 	    //@hide
 	    region VSense_FSM:
 	      		initial state init
-	      		 	--> Loop with Vs / start_VTimers;
+	      		 	o-> Loop with Vs / start_VTimers
+	      		 	--> Loop with VRP_start;
 	      		  
 	      		  
 	      		 state Loop{
@@ -64,6 +69,7 @@ output signal AVI_stop, AEI_stop;
 		   		
 		   		state startATimers
 		   		--> init with start_VTimers / AVI_stop;
+		   		
 		   		 
 		
 		region VPace_FSM:		
@@ -97,10 +103,7 @@ output signal AVI_stop, AEI_stop;
 	
 				    
 				    state extendAVI
-				    	/*Might be used */
-				    	// o-> vSense  with start_VTimers
-				    	--> vPace with URITO / Vp;start_VTimers;
-				    	
+				    	--> vPace  with URITO / Vp;start_VTimers;
 				    	
 				    state vPace;
 				    
@@ -111,8 +114,13 @@ output signal AVI_stop, AEI_stop;
 
 		region APace_FSM:
 			
+			
+			  	
+			  	
+		  	
+		  			
 			initial state AEI{
-			  	initial state init
+			  	initial state waitAEI
 			  		o-> finish with start_ATimers
 			  		--> aPace with AEITO / Ap; start_ATimers;
 			  					  		

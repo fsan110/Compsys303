@@ -51,8 +51,8 @@ void buttonCheck();
 void resetTimerFlags();
 
 /*Button Flags || UART Flags*/
-uint8_t button0Flag = 1;  //Ventricle starts first. Just to get things moving on start
-uint8_t button1Flag = 0;  //As
+uint8_t button0Flag = 0;  //Ventricle starts first. Just to get things moving on start
+uint8_t button1Flag = 1;  //As
 uint8_t uart_VFlag = 0;
 uint8_t uart_AFlag = 0;
 
@@ -225,7 +225,6 @@ void setLeds(){
 	if(Ap && Vp){
 		/*This should not happen!*/
 		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE, Ap_led + Vp_led);
-
 	}else if(Vp){
 		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE,Vp_led);
 	}else if(Ap){
@@ -245,17 +244,18 @@ void uartInit(){
 }
 
 void sendUart(){
-	if(Ap){
+
+	if(Ap & Vp){
+		printf("Error. Should not pace!\n");
+	}else if(Ap){
 		char a = 'A';
 		write(uartFile, &a, 1);
-		//write(uartFile, 'A', 1);
-		printf("Pacing A to Machine");
+		printf("Pacing A to Machine\n");
 
 	}else if(Vp){
 		char v = 'V';
 		write(uartFile, &v, 1);
-		//write(uartFile, 'V', 1);
-		printf("Pacing V to Machine");
+		printf("Pacing V to Machine\n");
 	}
 }
 
@@ -263,6 +263,7 @@ void uartCheck(){
 	if(uart_VFlag){
 		//printf("VSense from outside!\n");
 		Vs = 1;
+		printf("VSense!\n");
 		uart_VFlag = 0;
 
 	}else{
@@ -272,6 +273,7 @@ void uartCheck(){
 	if(uart_AFlag){
 		//printf("ASense from outside!\n");
 		As = 1;
+		printf("ASense!\n");
 		uart_AFlag = 0;
 	}else{
 		As = 0;
@@ -317,6 +319,8 @@ int main()
 	while(1){
 
 
+
+
 		Run();
 
 	}
@@ -346,13 +350,15 @@ void init_mode(){
 	uint8_t S0=(IORD_ALTERA_AVALON_PIO_DATA(SWITCHES_BASE)&Switch0)&Switch0;
 
 		if (S0){
-
 			Mode=Mode2;
-			enableButtonInterrupts();
+			disableButtonInterrupts();
+			//Init mode button flags stay low
+			button0Flag = 0;
+			button1Flag = 0;
 
 		}else{
 			Mode=Mode1;
-			disableButtonInterrupts();
+			enableButtonInterrupts();
 		}
 
 }
@@ -364,12 +370,13 @@ void check_mode(){
 	if (S0 && (Mode == Mode1) ){
 
 		Mode=Mode2;
-		enableButtonInterrupts();
+		disableButtonInterrupts();
 		lcd_sel_mode();
 
 	}else if(!S0 && (Mode == Mode2) ){
 		Mode=Mode1;
-		disableButtonInterrupts();
+
+		enableButtonInterrupts();
 		lcd_sel_mode();
 	}
 
@@ -388,45 +395,45 @@ void mode1(){
 
 	tick();
 
-
-
-	setLeds();
-
-
 	ventricleActivity();
 
 	atrialActivity();
+
+	setLeds();
 
 }
 
 void mode2(){
 
-
-	uartCheck();
-
+	//Read UART first
 	readUartNonBlocking();
-
-	resetTimerFlags();
 
 	sendUart();
 
+	uartCheck();
+
+
+	resetTimerFlags();
+
 	tick();
 
-	setLeds();
 
 	ventricleActivity();
 
 	atrialActivity();
 
+	//sendUart();
+
+	setLeds();
 
 }
 
 void resetTimerFlags(){
 	if(VRPTO_flag){
 		VRPTO = 1;
+		VRPTO_flag = 0;
 		printf("VRP timed out!\n");
 		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 1);
-		VRPTO_flag = 0;
 		/* If we want to turn off all leds at start*/
 		clearGreenLeds();
 	}else{
@@ -435,28 +442,29 @@ void resetTimerFlags(){
 
 	if(PVARPTO_flag){
 		PVARPTO = 1;
+		PVARPTO_flag = 0;
 		printf("PVARP timed out!\n");
 		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 2);
-		PVARPTO_flag = 0;
+
 	}else{
 		PVARPTO = 0;
 	}
 
 	if(AVITO_flag){
 		AVITO = 1;
-		printf("AVI timed out!\n");
-
-		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 4);
 		AVITO_flag = 0;
+		printf("AVI timed out!\n");
+		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 4);
+
 	}else{
 		AVITO = 0;
 	}
 
 	if(AEITO_flag){
 		AEITO = 1;
+		AEITO_flag = 0;
 		printf("AEI timed out!\n");
 		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 8);
-		AEITO_flag = 0;
 	}else{
 		AEITO = 0;
 	}
