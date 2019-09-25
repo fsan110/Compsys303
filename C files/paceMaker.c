@@ -7,7 +7,6 @@
 
 #include <stdio.h>
 #include <stdint.h>
-
 #include <alt_types.h> // alt_u32 is a kind of alt_types
 #include <sys/alt_irq.h> // to register interrupts
 #include "sys/alt_alarm.h"
@@ -36,7 +35,7 @@ FILE* LCD;
 
 
 //Peripheral Function Declarations
-void enableInterrupts();
+void registerButtonInterrupts();
 void enableButtonInterrupts();
 void disableButtonInterrupts();
 void clearGreenLeds();
@@ -49,11 +48,13 @@ void readUartNonBlocking();
 void uartCheck();
 void buttonCheck();
 void resetTimerFlags();
-void registerButtonInterrupts();
+
 
 /*Button Flags || UART Flags*/
-uint8_t button0Flag = 0;  //Ventricle starts first. Just to get things moving on start
-uint8_t button1Flag = 1;  //As
+/* One can get either Atrium or Ventricle to start first*/
+uint8_t button0Flag = 1;  //Ventricle starts first. Just to get things moving on start
+uint8_t button1Flag = 0;  //As
+
 uint8_t uart_VFlag = 0;
 uint8_t uart_AFlag = 0;
 

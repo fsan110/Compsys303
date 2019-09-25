@@ -32,10 +32,10 @@ char LRI_start;
 char PVARP_start;
 char start_VTimers;
 char AVI_stop;
-char _pacemaker2_local__trig;
-char _pacemaker2_local__trig2;
-char _pacemaker2_local__trig3;
-char _pacemaker2_local__trig4;
+char _DDDpacemaker_local__trig;
+char _DDDpacemaker_local__trig2;
+char _DDDpacemaker_local__trig3;
+char _DDDpacemaker_local__trig4;
 char g0;
 char g1;
 char g2;
@@ -325,7 +325,6 @@ void tick(){
       g6_e1 =(!((g5||g12||g23||g17)));
       _cg5 = Rst;
       g13_e1 =(!((g12||g17)));
-      _cg12 = Rst;
       g132 = g0;
       g134 =(PRE_g133);
       g133 =(g132||g134);
@@ -416,8 +415,9 @@ void tick(){
       _cg25 = PVARP_start;
       g26 =(g25&&_cg25);
       if(g26){
-         _pacemaker2_local__trig = 1;
+         _DDDpacemaker_local__trig = 1;
       }
+      _cg12 = Rst;
       g14 =(g12&&(!(_cg12)));
       _cg14 = PVARPTO;
       _cg17 = Rst;
@@ -427,13 +427,13 @@ void tick(){
       if(g19){
          start_ATimers =(start_ATimers||1);
       }
-      g15 =((g14&&_cg14)||g19||(g18&&(!(_cg18))));
-      _cg15 = _pacemaker2_local__trig;
+      g15 =((g14&&_cg14)||(g18&&(!(_cg18)))||g19);
+      _cg15 = _DDDpacemaker_local__trig;
       g20 =(g14&&(!(_cg14)));
-      _cg20 = _pacemaker2_local__trig;
-      g13 =((g12&&_cg12)||(g15&&_cg15)||(g20&&_cg20)||(g17&&_cg17));
+      _cg20 = _DDDpacemaker_local__trig;
+      g13 =((g15&&_cg15)||(g20&&_cg20)||(g17&&_cg17)||(g12&&_cg12));
       g24_e2 =(!(g23));
-      g24 =((g23&&_cg23)||g26);
+      g24 =(g26||(g23&&_cg23));
       g27 =((g13_e1||g13)&&(g24_e2||g24)&&(g13||g24));
       _cg27 = Rst;
       g6 =((g5&&_cg5)||(g27&&_cg27));
@@ -446,16 +446,16 @@ void tick(){
       _cg51 = VRP_start;
       g52 =(g51&&_cg51);
       if(g52){
-         _pacemaker2_local__trig2 = 1;
+         _DDDpacemaker_local__trig2 = 1;
       }
       _cg38 = Rst;
       g40 =(g38&&(!(_cg38)));
       _cg40 = VRPTO;
       g46 =(g40&&(!(_cg40)));
-      _cg46 = _pacemaker2_local__trig2;
-      g41 =(g45||(g44&&(!(_cg44)))||(g40&&_cg40));
-      _cg41 = _pacemaker2_local__trig2;
-      g39 =((g46&&_cg46)||(g43&&_cg43)||(g41&&_cg41)||(g38&&_cg38));
+      _cg46 = _DDDpacemaker_local__trig2;
+      g41 =((g40&&_cg40)||g45||(g44&&(!(_cg44))));
+      _cg41 = _DDDpacemaker_local__trig2;
+      g39 =((g46&&_cg46)||(g38&&_cg38)||(g43&&_cg43)||(g41&&_cg41));
       g50_e2 =(!(g49));
       g50 =((g49&&_cg49)||g52);
       g53 =((g39_e1||g39)&&(g50_e2||g50)&&(g39||g50));
@@ -482,26 +482,26 @@ void tick(){
       _cg101 = URI_start;
       g102 =(g101&&_cg101);
       if(g102){
-         _pacemaker2_local__trig3 = 1;
+         _DDDpacemaker_local__trig3 = 1;
       }
+      _cg89 = Rst;
+      g87 =(g95b||g86b||(g89&&(!(_cg89))));
+      _cg87 = _DDDpacemaker_local__trig3;
       _cg84 = Rst;
-      g82 =((g84&&(!(_cg84)))||(g81&&_cg81));
-      _cg82 = _pacemaker2_local__trig3;
       _cg75 = Rst;
       g77 =(g75&&(!(_cg75)));
       _cg77 = URITO;
+      g78 =((g77&&_cg77)||(g85&&(!(_cg85))));
+      _cg78 = _DDDpacemaker_local__trig3;
       g90 =(g77&&(!(_cg77)));
       _cg90 = AVITO;
-      g91 =((g94&&(!(_cg94)))||(g90&&_cg90));
-      _cg91 = _pacemaker2_local__trig3;
-      _cg89 = Rst;
-      g87 =(g95b||(g89&&(!(_cg89)))||g86b);
-      _cg87 = _pacemaker2_local__trig3;
-      g78 =((g77&&_cg77)||(g85&&(!(_cg85))));
-      _cg78 = _pacemaker2_local__trig3;
+      g91 =((g90&&_cg90)||(g94&&(!(_cg94))));
+      _cg91 = _DDDpacemaker_local__trig3;
+      g82 =((g81&&_cg81)||(g84&&(!(_cg84))));
+      _cg82 = _DDDpacemaker_local__trig3;
       g96 =(g90&&(!(_cg90)));
-      _cg96 = _pacemaker2_local__trig3;
-      g76 =((g82&&_cg82)||(g91&&_cg91)||(g80&&_cg80)||(g87&&_cg87)||(g84&&_cg84)||(g75&&_cg75)||(g78&&_cg78)||(g93&&_cg93)||(g89&&_cg89)||(g96&&_cg96));
+      _cg96 = _DDDpacemaker_local__trig3;
+      g76 =((g87&&_cg87)||(g93&&_cg93)||(g80&&_cg80)||(g84&&_cg84)||(g78&&_cg78)||(g91&&_cg91)||(g75&&_cg75)||(g82&&_cg82)||(g96&&_cg96)||(g89&&_cg89));
       g100_e2 =(!(g99));
       g100 =((g99&&_cg99)||g102);
       g103 =((g76_e1||g76)&&(g100_e2||g100)&&(g76||g100));
@@ -515,6 +515,7 @@ void tick(){
       g111_e1 =(!((g110||g115||g120)));
       _cg110 = Rst;
       _cg120 = Rst;
+      _cg115 = Rst;
       g60d = g60;
       if(g60d){
          AEI_start =(AEI_start||1);
@@ -524,7 +525,7 @@ void tick(){
       _cg126 = AEI_start;
       g127 =(g126&&_cg126);
       if(g127){
-         _pacemaker2_local__trig4 = 1;
+         _DDDpacemaker_local__trig4 = 1;
       }
       g7 =(g5&&(!(_cg5)));
       _cg7 = As;
@@ -534,10 +535,12 @@ void tick(){
       }
       g112 =(g110&&(!(_cg110)));
       _cg112 = start_ATimers;
+      g113 =((g115&&(!(_cg115)))||(g112&&_cg112));
+      _cg113 = _DDDpacemaker_local__trig4;
       g116 =(g112&&(!(_cg112)));
       _cg116 = AEITO;
       g121 =(g116&&(!(_cg116)));
-      _cg121 = _pacemaker2_local__trig4;
+      _cg121 = _DDDpacemaker_local__trig4;
       g117 =(g116&&_cg116);
       if(g117){
          Ap =(Ap||1);
@@ -546,51 +549,48 @@ void tick(){
       if(g117b){
          start_ATimers =(start_ATimers||1);
       }
-      g118 =(g117b||(g120&&(!(_cg120))));
-      _cg118 = _pacemaker2_local__trig4;
-      _cg115 = Rst;
-      g113 =((g112&&_cg112)||(g115&&(!(_cg115))));
-      _cg113 = _pacemaker2_local__trig4;
-      g111 =((g110&&_cg110)||(g120&&_cg120)||(g121&&_cg121)||(g118&&_cg118)||(g113&&_cg113)||(g115&&_cg115));
+      g118 =((g120&&(!(_cg120)))||g117b);
+      _cg118 = _DDDpacemaker_local__trig4;
+      g111 =((g110&&_cg110)||(g120&&_cg120)||(g115&&_cg115)||(g113&&_cg113)||(g121&&_cg121)||(g118&&_cg118));
       g125_e2 =(!(g124));
       g125 =(g127||(g124&&_cg124));
       g128 =((g111_e1||g111)&&(g125_e2||g125)&&(g111||g125));
       _cg128 = Rst;
       g129 =(g128&&_cg128);
       g130 =((g6_e1||g6)&&(g32_e2||g32)&&(g58_e3||g58)&&(g64_e4||g64)&&(g70_e5||g70)&&(g129_e6||g129)&&(g6||g32||g58||g64||g70||g129));
-      g2 =(g1||g130);
+      g2 =(g130||g1);
       g3 = g2;
       g28 =(g7&&(!(_cg7)));
       _cg28 = PVARP_start;
-      g4 =((g28&&(!(_cg28)))||g3);
-      g9 =((g27&&(!(_cg27)))||(g28&&_cg28)||g8);
+      g4 =(g3||(g28&&(!(_cg28))));
+      g9 =((g28&&_cg28)||g8||(g27&&(!(_cg27))));
       if(g9){
-         _pacemaker2_local__trig = 0;
+         _DDDpacemaker_local__trig = 0;
       }
       g10 = g9;
       g11 =(g10||(g20&&(!(_cg20))));
       g16 =(g15&&(!(_cg15)));
       g21 = g9;
-      g22 =((g25&&(!(_cg25)))||g21);
+      g22 =(g21||(g25&&(!(_cg25))));
       g29 = g2;
       g54 =(g33&&(!(_cg33)));
       _cg54 = VRP_start;
       g30 =((g54&&(!(_cg54)))||g29);
-      g35 =(g34||(g53&&(!(_cg53)))||(g54&&_cg54));
+      g35 =((g53&&(!(_cg53)))||(g54&&_cg54)||g34);
       if(g35){
-         _pacemaker2_local__trig2 = 0;
+         _DDDpacemaker_local__trig2 = 0;
       }
       g36 = g35;
-      g37 =(g36||(g46&&(!(_cg46))));
+      g37 =((g46&&(!(_cg46)))||g36);
       g42 =(g41&&(!(_cg41)));
       g47 = g35;
-      g48 =((g51&&(!(_cg51)))||g47);
+      g48 =(g47||(g51&&(!(_cg51))));
       g55 = g2;
       g60f = g60;
       if(g60f){
          AVI_stop =(AVI_stop||1);
       }
-      g56 =(g55||g60f||(g59&&(!(_cg59))));
+      g56 =(g55||(g59&&(!(_cg59)))||g60f);
       g60c = g60;
       if(g60c){
          LRI_start =(LRI_start||1);
@@ -609,9 +609,9 @@ void tick(){
       g62 =(g66b||(g65&&(!(_cg65)))||g61);
       g67 = g2;
       g68 =(g67||(g104&&(!(_cg104))));
-      g72 =((g103&&(!(_cg103)))||g105b||(g71&&_cg71));
+      g72 =((g71&&_cg71)||g105b||(g103&&(!(_cg103))));
       if(g72){
-         _pacemaker2_local__trig3 = 0;
+         _DDDpacemaker_local__trig3 = 0;
       }
       g73 = g72;
       g74 =(g73||(g96&&(!(_cg96))));
@@ -620,18 +620,18 @@ void tick(){
       g88 =(g87&&(!(_cg87)));
       g92 =(g91&&(!(_cg91)));
       g97 = g72;
-      g98 =(g97||(g101&&(!(_cg101))));
+      g98 =((g101&&(!(_cg101)))||g97);
       g106 = g2;
-      g107 =(g106||(g128&&(!(_cg128))));
+      g107 =((g128&&(!(_cg128)))||g106);
       if(g107){
-         _pacemaker2_local__trig4 = 0;
+         _DDDpacemaker_local__trig4 = 0;
       }
       g108 = g107;
-      g109 =(g108||(g121&&(!(_cg121))));
+      g109 =((g121&&(!(_cg121)))||g108);
       g114 =(g113&&(!(_cg113)));
       g119 =(g118&&(!(_cg118)));
       g122 = g107;
-      g123 =(g122||(g126&&(!(_cg126))));
+      g123 =((g126&&(!(_cg126)))||g122);
       g131_e1_fix =(g99||g12||g23||g38||g49||g115||g80||g120||g17||g43||g93||g84);
       g131_e1 =(!((g5||g31||g57||g63||g69||g110||g124||g75||g89||g131_e1_fix)));
       g135_e2 =(!(g134));
