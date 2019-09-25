@@ -50,11 +50,12 @@ void buttonCheck();
 void resetTimerFlags();
 
 
-/*Button Flags || UART Flags*/
+/*Button Flags */
 /* One can get either Atrium or Ventricle to start first*/
 uint8_t button0Flag = 1;  //Ventricle starts first. Just to get things moving on start
-uint8_t button1Flag = 0;  //As
+uint8_t button1Flag = 0;  //Asense
 
+/*UART Flags*/
 uint8_t uart_VFlag = 0;
 uint8_t uart_AFlag = 0;
 
@@ -79,6 +80,7 @@ uint8_t URI_running = 0;
 //Mode
 uint8_t Mode = Mode1;
 
+/*Logic for PaceMaker*/
 //Heart Events
 void ventricleActivity();
 void atrialActivity();
@@ -88,9 +90,12 @@ void URI_region();
 void AVI_region();
 void AEI_region();
 void PVARP_region();
+//Controller
 void Run();
+//Modes
 void mode1();
 void mode2();
+//Changing of Modes
 void check_mode();
 void init_mode();
 void lcd_sel_mode();
@@ -130,7 +135,7 @@ void* timerContextAVI = (void*) &timeCountMainAVI;
 //VPace time when ASense is asserted in mode1
 int start_time=0;
 
-
+/*ISRS and helpers for ISR*/
 alt_u32 VRPTimerISR(void* context){
 	//Return 0 to stop timer
 	VRPTO_flag = 1;
@@ -189,9 +194,6 @@ void buttonsIsr(void* context, alt_u32 id){
 }
 
 
-void registerButtonInterrupts(){
-	alt_irq_register(BUTTONS_IRQ,NULL, buttonsIsr);
-}
 
 void enableButtonInterrupts()
 {
@@ -212,92 +214,9 @@ void disableButtonInterrupts()
 
 }
 
-void clearRedLeds()
-{
-	IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 0x0);
 
-}
 
-void clearGreenLeds(){
-	IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE, 0x0);
-}
 
-void setLeds(){
-
-	if(Ap && Vp){
-		/*This should not happen!*/
-		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE, Ap_led + Vp_led);
-	}else if(Vp){
-		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE,Vp_led);
-	}else if(Ap){
-		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE,Ap_led);
-	}
-
-}
-
-void uartInit(){
-
-	uartFile = open(UART_NAME, O_NONBLOCK | O_RDWR);
-
-	if(!uartFile){
-		printf("Failed to open UART");
-	}
-
-}
-
-void sendUart(){
-
-	if(Ap & Vp){
-		printf("Error. Should not pace!\n");
-	}else if(Ap){
-		char a = 'A';
-		write(uartFile, &a, 1);
-		printf("Pacing A to Machine\n");
-
-	}else if(Vp){
-		char v = 'V';
-		write(uartFile, &v, 1);
-		printf("Pacing V to Machine\n");
-	}
-}
-
-void uartCheck(){
-	if(uart_VFlag){
-		//printf("VSense from outside!\n");
-		Vs = 1;
-		printf("VSense!\n");
-		uart_VFlag = 0;
-
-	}else{
-		Vs = 0;
-	}
-
-	if(uart_AFlag){
-		//printf("ASense from outside!\n");
-		As = 1;
-		printf("ASense!\n");
-		uart_AFlag = 0;
-	}else{
-		As = 0;
-	}
-}
-
-void readUartNonBlocking(){
-	//Read sense events from heart
-	char uartBuffer[10];
-	int length = 0;
-	length = read(uartFile, uartBuffer, sizeof(uartBuffer) - 1);
-
-	if(length > 0){
-		for(int i = 0; i < length; i++){
-			if(uartBuffer[i] == 'V'){
-				uart_VFlag = 1;
-			}else if(uartBuffer[i] == 'A'){
-				uart_AFlag = 1;
-			}
-		}
-	}
-}
 
 int main()
 {
@@ -363,6 +282,8 @@ void init_mode(){
 		}
 
 }
+/*Checks if there is a change in mode (only writes to LCD when there is a change)
+ * Disables all button interrupts in mode2 and enables in mode1 */
 void check_mode(){
 
 	uint8_t S0=(IORD_ALTERA_AVALON_PIO_DATA(SWITCHES_BASE)&Switch0)&Switch0;
@@ -382,46 +303,10 @@ void check_mode(){
 
 }
 
-void mode1(){
-	start_time++;
-
-	//Get inputs VSense and ASense BEFORE tick
-	buttonCheck();
-
-	resetTimerFlags();
-
-	tick();
-
-	ventricleActivity();
-
-	atrialActivity();
-
-	setLeds();
-
-}
-
-void mode2(){
-
-	//Read UART first
-	readUartNonBlocking();
-
-	uartCheck();
-
-	resetTimerFlags();
-
-	tick();
 
 
-	ventricleActivity();
 
-	atrialActivity();
-
-	sendUart();
-
-	setLeds();
-
-}
-
+/*Checks all Timers Time Out Signal Flags and Resets them*/
 void resetTimerFlags(){
 	if(VRPTO_flag){
 		VRPTO = 1;
@@ -489,26 +374,8 @@ void resetTimerFlags(){
 	}
 }
 
-void buttonCheck(){
-	if(button0Flag){
-		Vs = 1;
-		printf("VSense!\n");
-		button0Flag = 0;
 
-	}else{
-		Vs = 0;
-	}
-
-	if(button1Flag){
-		As = 1;
-		printf("ASense!\n");
-		button1Flag = 0;
-	}else{
-		As = 0;
-	}
-
-}
-
+/*Refractory Timer for V Event */
 void VRP_region(){
 	if(VRP_start){
 
@@ -522,7 +389,7 @@ void VRP_region(){
 	   printf("VRP started!\n");
 	}
 }
-
+/*Handles URI timer for V Events */
 void URI_region(){
 	if(URI_start){
 		if(URI_running){
@@ -534,7 +401,7 @@ void URI_region(){
 		printf("URI started!\n");
 	}
 }
-
+/*Handles LRI timer for V Events  */
 void LRI_region(){
 	if(LRI_start){
 		if(LRI_running){
@@ -546,7 +413,7 @@ void LRI_region(){
 		printf("LRI started!\n");
 	}
 }
-
+/*Handles AEI Timer for interval between V Event and next A Event */
 void AEI_region(){
 	if(AEI_stop && AEI_running){
 
@@ -569,7 +436,7 @@ void AEI_region(){
 			printf("AEI started!\n");
 	}
 }
-
+/*Refractory Timer for E Event after a V Event*/
 void PVARP_region(){
 	if(PVARP_start){
 
@@ -582,7 +449,7 @@ void PVARP_region(){
 		printf("PVARP started!\n");
 	}
 }
-
+/*Handles AVI Timer for interval between E Event and next V Event */
 void AVI_region(){
 	if(AVI_stop && AVI_running){
 		alt_alarm_stop(&avi_timer);
@@ -603,7 +470,7 @@ void AVI_region(){
 
 	}
 }
-
+/* Executes logic for all regions(timers) that start with V Events*/
 void ventricleActivity()
 {
 	/*LRI timer is stopped and started in the same clock cycle*/
@@ -613,16 +480,174 @@ void ventricleActivity()
 	AEI_region();
 	PVARP_region();
 }
-
+/* Executes logic for all regions(timers) that start with A Events*/
 void atrialActivity(){
 	AVI_region();
 }
-
+/*Used to show current mode*/
 void lcd_sel_mode(){
-//Used to show current mode
+
 	  LCD = fopen(LCD_NAME, "w");
 	  fprintf(LCD, "%c%s", ESC, CLEAR_LCD_STRING);
 	  fprintf(LCD, "Mode: %d\n", Mode);
 	  fclose(LCD);
+}
+
+/*                 MODE 1                  */
+void mode1(){
+	//used to measure time between events(if needed to
+	start_time++;
+
+	//Get inputs VSense and ASense BEFORE tick
+	buttonCheck();
+
+	resetTimerFlags();
+
+	tick();
+
+	ventricleActivity();
+
+	atrialActivity();
+
+	setLeds();
+
+}
+/*Updates leds based on Vp and Ap*/
+void setLeds(){
+
+	if(Ap && Vp){
+		/*This should not happen!*/
+		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE, Ap_led + Vp_led);
+	}else if(Vp){
+		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE,Vp_led);
+	}else if(Ap){
+		IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE,Ap_led);
+	}
+
+}
+
+void clearRedLeds()
+{
+	IOWR_ALTERA_AVALON_PIO_DATA(LEDS_RED_BASE, 0x0);
+
+}
+
+void clearGreenLeds(){
+	IOWR_ALTERA_AVALON_PIO_DATA(LEDS_GREEN_BASE, 0x0);
+}
+/*Checks if Asense(Button1) or Vsense(Button0) was provided */
+void buttonCheck(){
+	if(button0Flag){
+		Vs = 1;
+		printf("VSense!\n");
+		button0Flag = 0;
+
+	}else{
+		Vs = 0;
+	}
+
+	if(button1Flag){
+		As = 1;
+		printf("ASense!\n");
+		button1Flag = 0;
+	}else{
+		As = 0;
+	}
+
+}
+
+void registerButtonInterrupts(){
+	alt_irq_register(BUTTONS_IRQ,NULL, buttonsIsr);
+}
+
+
+
+/*               MODE 2             */
+
+void mode2(){
+
+	//Read UART first
+	readUartNonBlocking();
+
+	uartCheck();
+
+	resetTimerFlags();
+
+	tick();
+
+
+	ventricleActivity();
+
+	atrialActivity();
+
+	sendUart();
+
+	setLeds();
+
+}
+
+/*Inits Uart in Non Blocking Mode with Read/Write access*/
+void uartInit(){
+
+	uartFile = open(UART_NAME, O_NONBLOCK | O_RDWR);
+
+	if(!uartFile){
+		printf("Failed to open UART");
+	}
+
+}
+
+void sendUart(){
+
+	if(Ap & Vp){
+		printf("Error. Should not pace!\n");
+	}else if(Ap){
+		char a = 'A';
+		write(uartFile, &a, 1);
+		printf("Pacing A to Machine\n");
+
+	}else if(Vp){
+		char v = 'V';
+		write(uartFile, &v, 1);
+		printf("Pacing V to Machine\n");
+	}
+}
+/*Checks for Asense and Vsense flags set by readUartNonBlocking()*/
+void uartCheck(){
+	if(uart_VFlag){
+		//printf("VSense from outside!\n");
+		Vs = 1;
+		printf("VSense!\n");
+		uart_VFlag = 0;
+
+	}else{
+		Vs = 0;
+	}
+
+	if(uart_AFlag){
+		//printf("ASense from outside!\n");
+		As = 1;
+		printf("ASense!\n");
+		uart_AFlag = 0;
+	}else{
+		As = 0;
+	}
+}
+
+void readUartNonBlocking(){
+	//Read sense events from heart
+	char uartBuffer[10];
+	int length = 0;
+	length = read(uartFile, uartBuffer, sizeof(uartBuffer) - 1);
+
+	if(length > 0){
+		for(int i = 0; i < length; i++){
+			if(uartBuffer[i] == 'V'){
+				uart_VFlag = 1;
+			}else if(uartBuffer[i] == 'A'){
+				uart_AFlag = 1;
+			}
+		}
+	}
 }
 
